@@ -11,7 +11,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/login',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(
@@ -27,26 +27,24 @@ final goRouterProvider = Provider((ref) {
       ),
 
       //Private routes
-      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     ],
     redirect: (context, state) {
       final authStatus = goRouterNotifier.authStatus;
       final isGoingTo = state.matchedLocation;
 
-      if (isGoingTo == '/home' && authStatus == AuthStatus.checking) {
+      if (isGoingTo == '/callback' && authStatus == AuthStatus.checking) {
         return null;
       }
 
       if (authStatus == AuthStatus.unauthenticated) {
-        if (isGoingTo == '/login' || isGoingTo == '/register') return null;
-
-        return '/login';
+        if (isGoingTo == '/login' || isGoingTo == '/register') {
+          return '/callback';
+        }
       }
 
       if (authStatus == AuthStatus.authenticated) {
-        if (isGoingTo == '/login' ||
-            isGoingTo == '/register' ||
-            isGoingTo == '/callback') {
+        if (isGoingTo == '/login' || isGoingTo == '/register') {
           return '/home';
         }
       }

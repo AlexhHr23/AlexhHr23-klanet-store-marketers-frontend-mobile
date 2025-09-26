@@ -35,7 +35,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       await keyValueStorageService.setKeyValue('acessToken', acessToken);
 
-      print('acessToken: $acessToken');
+      // print('acessToken: $acessToken');
     } catch (e) {
       state = state.copyWith(
         authStatus: AuthStatus.unauthenticated,
@@ -45,19 +45,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> getUser() async {
+    print('inicio getUser');
     final accessToken = await keyValueStorageService.getValue<String>(
       'acessToken',
     );
 
-    if (accessToken == null) {
-      await logout('', 'No hay token guardado');
-      return;
-    }
+    print('accessToken: $accessToken');
+
+    if (accessToken == null) return logout('', 'No hay token');
 
     try {
+      await Future.delayed(const Duration(seconds: 2));
       final user = await authRepository.getUser(accessToken);
+
       _setLoggedUser(user, accessToken);
     } on CustomError catch (e) {
+      print('Error: ${e.message}');
       await logout(accessToken, e.message);
     } catch (e) {
       await logout(accessToken, 'Error no controlado');

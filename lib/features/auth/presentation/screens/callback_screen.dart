@@ -14,6 +14,7 @@ class CallbackScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(authProvider.notifier).getUser();
     ref.listen(authProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty) {
         showSnackbar(context, next.errorMessage);
