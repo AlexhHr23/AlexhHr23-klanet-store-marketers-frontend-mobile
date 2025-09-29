@@ -28,10 +28,10 @@ class CallbackScreen extends ConsumerWidget {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 20),
-            Text(
-              'Obteniendo sesión del usuario...',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
+            // Text(
+            //   'Obteniendo sesión del usuario...',
+            //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            // ),
           ],
         ),
       ),

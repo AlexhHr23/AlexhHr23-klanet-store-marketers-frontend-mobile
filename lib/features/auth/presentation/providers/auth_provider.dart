@@ -56,7 +56,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     // print('accessToken get: $accessToken');
 
-    if (accessToken == null) return logout('No hay token');
+    if (accessToken == null) return logout('');
 
     try {
       await Future.delayed(const Duration(seconds: 2));
@@ -87,26 +87,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout(String? errorMessage) async {
-    // final accessToken = await keyValueStorageService.getValue<String>(
-    //   'acessToken',
-    // );
-
-    // if (accessToken != null) {
-    //   await authRepository.logout(accessToken);
-    //   state = state.copyWith(
-    //     authStatus: AuthStatus.unauthenticated,
-    //     user: null,
-    //     errorMessage: errorMessage,
-    //   );
-    //   await keyValueStorageService.removeKey('acessToken');
-    // } else {
-    state = state.copyWith(
-      authStatus: AuthStatus.unauthenticated,
-      user: null,
-      errorMessage: errorMessage,
+    final accessToken = await keyValueStorageService.getValue<String>(
+      'acessToken',
     );
-    await keyValueStorageService.removeKey('acessToken');
-    // }
+
+    if (accessToken != null) {
+      await authRepository.logout(accessToken);
+      state = state.copyWith(
+        authStatus: AuthStatus.unauthenticated,
+        user: null,
+        errorMessage: errorMessage,
+      );
+      await keyValueStorageService.removeKey('acessToken');
+    } else {
+      state = state.copyWith(
+        authStatus: AuthStatus.unauthenticated,
+        user: null,
+        errorMessage: errorMessage,
+      );
+      await keyValueStorageService.removeKey('acessToken');
+    }
   }
 }
 

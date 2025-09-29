@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:app_links/app_links.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+// import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:klanetmarketers/config/constants/enviroment.dart';
 import 'package:klanetmarketers/features/auth/domain/datasources/auth_datasource.dart';
 import 'package:klanetmarketers/features/auth/infrastructure/errors/auth_errors.dart';
@@ -172,21 +172,25 @@ class AuthDatasourceImpl extends AuthDatasource {
   }
 
   @override
-  Future<void> logout(String accessToken) async {
+  Future<void> logout(String idToken) async {
     final logoutUrl =
         Uri.https(zitadelIssuer.authority, '/oidc/v1/end_session', {
-          'id_token_hint': accessToken,
-          'post_logout_redirect_uri': '$callbackScheme://callback',
+          'id_token_hint': idToken,
+          'post_logout_redirect_uri': '$callbackScheme:/',
           'state': 'random_string',
-        }).toString();
+        });
 
     try {
-      await FlutterWebAuth2.authenticate(
-        url: logoutUrl,
-        callbackUrlScheme: '$callbackScheme:/',
+      final launched = await launchUrl(
+        logoutUrl,
+        mode: LaunchMode.externalApplication,
       );
 
-      print('Logout exitoso en ZITADEL');
+      if (!launched) {
+        throw Exception('No se pudo abrir el navegador para logout');
+      }
+
+      print('Logout iniciado en ZITADEL');
     } catch (e) {
       print('Error durante el logout: $e');
       throw Exception('Error al realizar el logout de ZITADEL');
