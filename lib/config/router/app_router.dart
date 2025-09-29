@@ -1,11 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/router/app_router_notifier.dart';
-import 'package:klanetmarketers/features/auth/presentation/screens/home_screen.dart';
-
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/auth/presentation/screens/callback_screen.dart';
-import '../../features/auth/presentation/screens/screens.dart';
+import '../../features/auth/presentation/presentation.dart';
+import '../../features/dashboard/presentation/presentation.dart';
 
 final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
