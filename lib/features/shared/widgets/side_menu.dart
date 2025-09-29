@@ -19,6 +19,7 @@ class SideMenuState extends ConsumerState<SideMenu> {
   Widget build(BuildContext context) {
     final hasNotch = MediaQuery.of(context).viewPadding.top > 35;
     final textStyles = Theme.of(context).textTheme;
+    final authState = ref.watch(authProvider);
 
     return NavigationDrawer(
       elevation: 1,
@@ -40,12 +41,15 @@ class SideMenuState extends ConsumerState<SideMenu> {
 
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 16, 10),
-          child: Text('Tony Stark', style: textStyles.titleSmall),
+          child: Text(
+            '${authState.user!.profile.name} ${authState.user!.profile.lastname1}',
+            style: textStyles.titleSmall,
+          ),
         ),
 
         const NavigationDrawerDestination(
           icon: Icon(Icons.home_outlined),
-          label: Text('Productos'),
+          label: Text('Dashboard'),
         ),
 
         const Padding(
@@ -62,7 +66,7 @@ class SideMenuState extends ConsumerState<SideMenu> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: CustomFilledButton(
             onPressed: () {
-              ref.read(authProvider.notifier).logout('', '');
+              ref.read(authProvider.notifier).logout('');
             },
             text: 'Cerrar sesión',
           ),

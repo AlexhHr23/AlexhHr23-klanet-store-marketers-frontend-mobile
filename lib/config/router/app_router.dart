@@ -11,7 +11,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/callback',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(
@@ -39,13 +39,17 @@ final goRouterProvider = Provider((ref) {
 
       if (authStatus == AuthStatus.unauthenticated) {
         if (isGoingTo == '/login' || isGoingTo == '/register') {
-          return '/callback';
+          return null;
         }
+
+        return '/login';
       }
 
       if (authStatus == AuthStatus.authenticated) {
-        if (isGoingTo == '/login' || isGoingTo == '/register') {
-          return '/home';
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/callback') {
+          return '/';
         }
       }
 

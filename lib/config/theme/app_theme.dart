@@ -16,7 +16,7 @@ class AppTheme {
       titleMedium: GoogleFonts.poppins().copyWith(
         fontSize: 30,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: Colors.black,
       ),
       titleSmall: GoogleFonts.poppins().copyWith(
         fontSize: 20,

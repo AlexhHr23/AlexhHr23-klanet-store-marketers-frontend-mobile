@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:klanetmarketers/features/shared/widgets/side_menu.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,19 +23,15 @@ class HomeScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      // drawer: SideMenu( scaffoldKey: scaffoldKey ),
+      drawer: SideMenu(scaffoldKey: scaffoldKey),
       appBar: AppBar(
-        title: const Text('Products'),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search_rounded)),
-        ],
+        title: const Text(
+          'Klanet Marketers',
+          style: TextStyle(color: Colors.black),
+        ),
+        centerTitle: true,
       ),
       body: const _ProductsView(),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Nuevo producto'),
-        icon: const Icon(Icons.add),
-        onPressed: () {},
-      ),
     );
   }
 }

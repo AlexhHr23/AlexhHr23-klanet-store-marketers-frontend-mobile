@@ -29,13 +29,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> authZitadel() async {
     await Future.delayed(const Duration(seconds: 2));
     try {
+      state = state.copyWith(authStatus: AuthStatus.checking);
+
       final auth = await authRepository.zitadelAuth();
 
       final acessToken = auth.tokenId;
 
       await keyValueStorageService.setKeyValue('acessToken', acessToken);
 
-      // print('acessToken: $acessToken');
+      // print('acessToken local storage: $acessToken');
+
+      await getUser();
     } catch (e) {
       state = state.copyWith(
         authStatus: AuthStatus.unauthenticated,
@@ -45,14 +49,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> getUser() async {
-    print('inicio getUser');
+    // print('inicio getUser');
     final accessToken = await keyValueStorageService.getValue<String>(
       'acessToken',
     );
 
-    print('accessToken: $accessToken');
+    // print('accessToken get: $accessToken');
 
-    if (accessToken == null) return logout('', 'No hay token');
+    if (accessToken == null) return logout('No hay token');
 
     try {
       await Future.delayed(const Duration(seconds: 2));
@@ -60,10 +64,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       _setLoggedUser(user, accessToken);
     } on CustomError catch (e) {
-      print('Error: ${e.message}');
-      await logout(accessToken, e.message);
+      // print('Error: ${e.message}');
+      await logout(e.message);
     } catch (e) {
-      await logout(accessToken, 'Error no controlado');
+      await logout('Error no controlado');
     }
   }
 
@@ -82,15 +86,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> logout(String accessToken, String? errorMessage) async {
-    print('Ejecutando logout');
-    // await authRepository.logout(accessToken);
+  Future<void> logout(String? errorMessage) async {
+    // final accessToken = await keyValueStorageService.getValue<String>(
+    //   'acessToken',
+    // );
+
+    // if (accessToken != null) {
+    //   await authRepository.logout(accessToken);
+    //   state = state.copyWith(
+    //     authStatus: AuthStatus.unauthenticated,
+    //     user: null,
+    //     errorMessage: errorMessage,
+    //   );
+    //   await keyValueStorageService.removeKey('acessToken');
+    // } else {
     state = state.copyWith(
       authStatus: AuthStatus.unauthenticated,
       user: null,
       errorMessage: errorMessage,
     );
     await keyValueStorageService.removeKey('acessToken');
+    // }
   }
 }
 
