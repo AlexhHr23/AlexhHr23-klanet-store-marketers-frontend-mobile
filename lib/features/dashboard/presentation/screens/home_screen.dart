@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
-import 'package:klanetmarketers/features/shared/widgets/side_menu.dart';
+import 'package:klanetmarketers/features/dashboard/presentation/widgets/widgets.dart';
+import 'package:klanetmarketers/features/shared/layout/app_layout.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -16,18 +19,23 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
+
     ref.listen(authProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty) {
         showSnackbar(context, next.errorMessage);
       }
     });
 
-    return Scaffold(
-      drawer: SideMenu(scaffoldKey: scaffoldKey),
+    return AppLayout(
+      scaffoldKey: scaffoldKey,
       appBar: AppBar(
-        title: const Text(
-          'Klanet Marketers',
-          style: TextStyle(color: Colors.black),
+        title: SizedBox(
+          height: 30,
+          child: SvgPicture.asset(
+            'assets/images/logo_klanet_d.svg',
+            height: 70,
+            color: AppColors.secondary,
+          ),
         ),
         centerTitle: true,
       ),
@@ -41,6 +49,6 @@ class _ProductsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Eres genial!'));
+    return const Column(children: [TimeZone()]);
   }
 }
