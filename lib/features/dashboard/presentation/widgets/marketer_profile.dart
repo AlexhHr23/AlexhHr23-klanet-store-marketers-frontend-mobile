@@ -12,25 +12,8 @@ class MarketerProfile extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-              spreadRadius: 1,
-            ),
-          ],
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.grey.shade50],
-          ),
-        ),
+      child: Card(
+        color: Colors.white,
         child: Column(
           children: [
             // Header con logo
@@ -62,9 +45,9 @@ class MarketerProfile extends ConsumerWidget {
                 ],
               ),
             ),
-
+        
             const SizedBox(height: 20),
-
+        
             Stack(
               alignment: Alignment.center,
               children: [
@@ -140,9 +123,9 @@ class MarketerProfile extends ConsumerWidget {
                 ),
               ],
             ),
-
+        
             const SizedBox(height: 16),
-
+        
             // Información del nombre
             Text(
               '${dashboardState.marketerProfile.marketer.personal.nombre} ${dashboardState.marketerProfile.marketer.personal.apellido1}',
@@ -152,9 +135,9 @@ class MarketerProfile extends ConsumerWidget {
               ),
               textAlign: TextAlign.center,
             ),
-
+        
             const SizedBox(height: 4),
-
+        
             // Username
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -170,9 +153,9 @@ class MarketerProfile extends ConsumerWidget {
                 ),
               ),
             ),
-
+        
             const SizedBox(height: 20),
-
+        
             // Items de información
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -205,7 +188,7 @@ class MarketerProfile extends ConsumerWidget {
                 ],
               ),
             ),
-
+        
             const SizedBox(height: 16),
           ],
         ),

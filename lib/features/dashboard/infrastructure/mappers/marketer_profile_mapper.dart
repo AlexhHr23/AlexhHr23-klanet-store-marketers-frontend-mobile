@@ -13,12 +13,18 @@ class MarketerProfileMapper {
         sopnsorActivosDer: json["sopnsor_activos_der"] ?? 0,
         faltantesIzq: json["faltantes_izq"] ?? 0,
         faltantesDer: json["faltantes_der"] ?? 0,
-        rangoActual: json["rango_actual"],
-        rangoSiguiente: RangoSiguienteMapper.jsonToEntity(
-          json["rango_siguiente"] ?? {},
-        ),
-        rangoAnterior: json["rango_anterior"] ?? 0,
-        rangoMaximo: json["rango_maximo"] ?? 0,
+        rangoActual: json["rango_actual"] != null
+          ? RangoMapper.jsonToEntity(json["rango_actual"])
+          : Rango.empty(),
+      rangoSiguiente: json["rango_siguiente"] != null
+          ? RangoMapper.jsonToEntity(json["rango_siguiente"])
+          : Rango.empty(),
+      rangoAnterior: json["rango_anterior"] != null
+          ? RangoMapper.jsonToEntity(json["rango_anterior"])
+          : Rango.empty(),
+      rangoMaximo: json["rango_maximo"] != null
+          ? RangoMapper.jsonToEntity(json["rango_maximo"])
+          : Rango.empty(),
         tieneGratuidad: json["tiene_gratuidad"] ?? false,
         membresiaActiva: json["membresia_activa"] ?? false,
         puedeComisionarRangos: json["puede_comisionar_rangos"] ?? false,
@@ -64,15 +70,14 @@ class PersonalMapper {
   );
 }
 
-class RangoSiguienteMapper {
-  static RangoSiguiente jsonToEntity(Map<String, dynamic> json) =>
-      RangoSiguiente(
-        id: json["ID"] ?? 0,
-        name: json["Name"] ?? '',
-        izq: json["Izq"] ?? 0,
-        der: json["Der"] ?? 0,
-        izqDir: json["IzqDir"] ?? 0,
-        derDir: json["DerDir"] ?? 0,
-        monto: json["Monto"] ?? 0,
-      );
+class RangoMapper {
+  static Rango jsonToEntity(Map<String, dynamic> json) => Rango(
+    id: json["ID"] ?? 0,
+    name: json["Name"] ?? '',
+    izq: json["Izq"] ?? 0,
+    der: json["Der"] ?? 0,
+    izqDir: json["IzqDir"] ?? 0,
+    derDir: json["DerDir"] ?? 0,
+    monto: json["Monto"] ?? 0,
+  );
 }

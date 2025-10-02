@@ -9,10 +9,10 @@ class MarketerProfile {
   final int sopnsorActivosDer;
   final int faltantesIzq;
   final int faltantesDer;
-  final dynamic rangoActual;
-  final RangoSiguiente rangoSiguiente;
-  final dynamic rangoAnterior;
-  final dynamic rangoMaximo;
+  final Rango rangoActual;
+  final Rango rangoSiguiente;
+  final Rango rangoAnterior;
+  final Rango rangoMaximo;
   final bool tieneGratuidad;
   final bool membresiaActiva;
   final bool puedeComisionarRangos;
@@ -50,10 +50,10 @@ class MarketerProfile {
     sopnsorActivosDer: 0,
     faltantesIzq: 0,
     faltantesDer: 0,
-    rangoActual: null,
-    rangoSiguiente: RangoSiguiente.empty(),
-    rangoAnterior: null,
-    rangoMaximo: null,
+    rangoActual: Rango.empty() ,
+    rangoSiguiente: Rango.empty(),
+    rangoAnterior: Rango.empty(),
+    rangoMaximo: Rango.empty(),
     tieneGratuidad: false,
     membresiaActiva: false,
     puedeComisionarRangos: false,
@@ -157,7 +157,7 @@ class Personal {
   );
 }
 
-class RangoSiguiente {
+class Rango {
   final int id;
   final String name;
   final int izq;
@@ -166,7 +166,7 @@ class RangoSiguiente {
   final int derDir;
   final int monto;
 
-  RangoSiguiente({
+  Rango({
     required this.id,
     required this.name,
     required this.izq,
@@ -176,7 +176,7 @@ class RangoSiguiente {
     required this.monto,
   });
 
-  factory RangoSiguiente.empty() => RangoSiguiente(
+  factory Rango.empty() => Rango(
     id: 0,
     name: '',
     izq: 0,
