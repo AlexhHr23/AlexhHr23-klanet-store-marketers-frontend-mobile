@@ -19,7 +19,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
-
     ref.listen(authProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty) {
         showSnackbar(context, next.errorMessage);
@@ -50,7 +49,9 @@ class _ProductsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: const Column(children: [TimeServer(), MarketerProfile()]),
+      child: const Column(
+        children: [BannerSlider(), TimeServer(), MarketerProfile()],
+      ),
     );
   }
 }
