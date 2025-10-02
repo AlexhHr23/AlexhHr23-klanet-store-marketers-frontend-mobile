@@ -11,35 +11,75 @@ final dashboardProvider =
 
 class DashboardNotifier extends StateNotifier<DashboardState> {
   final DashboardRepository dashboardRepository;
+
   DashboardNotifier({required this.dashboardRepository})
     : super(DashboardState()) {
-    getTimeZones();
+    _loadDashboard();
   }
 
-  Future<void> getTimeZones() async {
-    if (state.isLoading) return;
+  Future<void> _loadDashboard() async {
+    state = state.copyWith(isLoading: true);
 
+    try {
+      final balance = await dashboardRepository.getTimeZones();
+      state = state.copyWith(balance: balance);
+
+      final marketerProfile = await dashboardRepository.getMarketerProfile();
+      state = state.copyWith(
+        marketerProfile: marketerProfile,
+        isLoading: false,
+      );
+
+      final banners = await dashboardRepository.getBanners();
+      state = state.copyWith(banners: banners, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      rethrow;
+    }
+  }
+
+  Future<void> getBalance() async {
     state = state.copyWith(isLoading: true);
     final timeZones = await dashboardRepository.getTimeZones();
     state = state.copyWith(balance: timeZones, isLoading: false);
   }
+
+  Future<void> getMarketerProfile() async {
+    state = state.copyWith(isLoading: true);
+    final marketerProfile = await dashboardRepository.getMarketerProfile();
+    state = state.copyWith(marketerProfile: marketerProfile, isLoading: false);
+  }
+
+  Future<void> getBanners() async {
+    state = state.copyWith(isLoading: true);
+    final banners = await dashboardRepository.getBanners();
+    state = state.copyWith(banners: banners, isLoading: false);
+  }
 }
 
 class DashboardState {
-  final Balance balance;
   final bool isLoading;
+  final Balance balance;
+  final List<String> banners;
+  final MarketerProfile marketerProfile;
 
-  DashboardState({Balance? balance, this.isLoading = false})
-    : balance =
-          balance ??
-          Balance(
-            balance: 0,
-            timeZone: TimeZoneServer(time: '', tzServer: ''),
-          );
+  DashboardState({
+    this.isLoading = false,
+    this.banners = const [],
+    Balance? balance,
+    MarketerProfile? marketerProfile,
+  }) : balance = balance ?? Balance.empty(),
+       marketerProfile = marketerProfile ?? MarketerProfile.empty();
 
-  DashboardState copyWith({Balance? balance, bool? isLoading}) =>
-      DashboardState(
-        balance: balance ?? this.balance,
-        isLoading: isLoading ?? this.isLoading,
-      );
+  DashboardState copyWith({
+    bool? isLoading,
+    Balance? balance,
+    MarketerProfile? marketerProfile,
+    List<String>? banners,
+  }) => DashboardState(
+    balance: balance ?? this.balance,
+    marketerProfile: marketerProfile ?? this.marketerProfile,
+    banners: banners ?? this.banners,
+    isLoading: isLoading ?? this.isLoading,
+  );
 }

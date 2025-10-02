@@ -22,4 +22,9 @@ class Environment {
   static String callback =
       dotenv.env['CALLBACK_URL_SCHEME'] ??
       'No esta configurado el CALLBACK_URL_SCHEME';
+  static String faas =
+      dotenv.env['VITE_API_FAAS'] ?? 'No esta configurado el VITE_API_FAAS';
+  static String faasApiKey =
+      dotenv.env['VITE_APIKEY_FAAS'] ??
+      'No esta configurado el VITE_APIKEY_FAAS';
 }

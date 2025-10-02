@@ -9,5 +9,8 @@ class BalanceMapper {
 
 class TimeZoneMapper {
   static TimeZoneServer jsonToEntity(Map<String, dynamic> json) =>
-      TimeZoneServer(time: json['time'], tzServer: json['tzServer']);
+      TimeZoneServer(
+        time: json['time'] ?? '',
+        tzServer: json['tz_server'] ?? '',
+      );
 }

@@ -9,4 +9,14 @@ class DashboardRepositoryImpl extends DashboardRepository {
   Future<Balance> getTimeZones() async {
     return datasource.getTimeZones();
   }
+
+  @override
+  Future<MarketerProfile> getMarketerProfile() async {
+    return datasource.getMarketerProfile();
+  }
+
+  @override
+  Future<List<String>> getBanners() {
+    return datasource.getBanners();
+  }
 }
