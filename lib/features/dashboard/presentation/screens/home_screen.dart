@@ -50,7 +50,7 @@ class _ProductsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: const Column(
-        children: [BannerSlider(), TimeServer(), MarketerProfile(), ProgressRanges()],
+        children: [BannerSlider(), TimeServer(), MarketerProfile(), NextRange(), ProgressRange(), Tree()],
       ),
     );
   }

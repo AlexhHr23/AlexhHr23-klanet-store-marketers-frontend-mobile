@@ -4,8 +4,8 @@ import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/dashboard/presentation/providers/providers.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class ProgressRanges extends ConsumerWidget {
-  const ProgressRanges({super.key});
+class NextRange extends ConsumerWidget {
+  const NextRange({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,7 +83,7 @@ class ProgressRanges extends ConsumerWidget {
               RangeProgressBar(
                 title: "Izquierda",
                 active: rangesState.activosIzq,
-                missing: rangesState.faltantesIzq + rangesState.activosIzq,
+                missing: rangesState.rangoSiguiente.izq,
                 icon: Icons.arrow_circle_left_rounded,
               ),
 
@@ -93,7 +93,7 @@ class ProgressRanges extends ConsumerWidget {
               RangeProgressBar(
                 title: "Derecha",
                 active: rangesState.activosDer,
-                missing: rangesState.faltantesDer + rangesState.activosDer,
+                missing: rangesState.rangoSiguiente.der,
                 icon: Icons.arrow_circle_right_rounded,
               ),
               // SizedBox(height: 16),
@@ -105,7 +105,6 @@ class ProgressRanges extends ConsumerWidget {
   }
 }
 
-/// Widget Reutilizable
 class RangeProgressBar extends StatelessWidget {
   final String title;
   final int active;

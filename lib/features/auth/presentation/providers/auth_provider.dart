@@ -37,8 +37,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       await keyValueStorageService.setKeyValue('acessToken', acessToken);
 
-      // print('acessToken local storage: $acessToken');
-
       await getUser();
     } catch (e) {
       state = state.copyWith(
