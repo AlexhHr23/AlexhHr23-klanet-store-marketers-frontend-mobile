@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:klanetmarketers/features/dashboard/presentation/widgets/widgets.dart';
 import 'package:klanetmarketers/features/shared/layout/app_layout.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+import '../providers/providers.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -25,32 +26,29 @@ class HomeScreen extends ConsumerWidget {
       }
     });
 
-    return AppLayout(
-      scaffoldKey: scaffoldKey,
-      appBar: AppBar(
-        title: SizedBox(
-          height: 30,
-          child: SvgPicture.asset(
-            'assets/images/logo_klanet_d.svg',
-            height: 70,
-            color: AppColors.secondary,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: const _ProductsView(),
-    );
+    return AppLayout(scaffoldKey: scaffoldKey, body: const _ProductsView());
   }
 }
 
-class _ProductsView extends StatelessWidget {
+class _ProductsView extends ConsumerWidget {
   const _ProductsView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardState = ref.watch(dashboardProvider);
     return SingleChildScrollView(
-      child: const Column(
-        children: [BannerSlider(), TimeServer(), MarketerProfile(), NextRange(), ProgressRange(), Tree()],
+      child: Skeletonizer(
+        enabled: dashboardState.isLoading,
+        child: const Column(
+          children: [
+            BannerSlider(),
+            TimeServer(),
+            MarketerProfile(),
+            NextRange(),
+            ProgressRange(),
+            Tree(),
+          ],
+        ),
       ),
     );
   }

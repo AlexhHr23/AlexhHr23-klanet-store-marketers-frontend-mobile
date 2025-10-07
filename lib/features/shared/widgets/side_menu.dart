@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:klanetmarketers/config/menu/menu_item.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/custom_filled_button.dart';
 
@@ -14,6 +16,7 @@ class SideMenu extends ConsumerStatefulWidget {
 
 class SideMenuState extends ConsumerState<SideMenu> {
   int navDrawerIndex = 0;
+  // final countryState = ref.
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +30,10 @@ class SideMenuState extends ConsumerState<SideMenu> {
       onDestinationSelected: (value) {
         setState(() {
           navDrawerIndex = value;
+          final menuItem = appMenuItems[value];
+          context.push(menuItem.link);
+          widget.scaffoldKey.currentState?.closeDrawer();
         });
-
-        // final menuItem = appMenuItems[value];
-        // context.push( menuItem.link );
-        widget.scaffoldKey.currentState?.closeDrawer();
       },
       children: [
         Padding(
@@ -47,9 +49,11 @@ class SideMenuState extends ConsumerState<SideMenu> {
           ),
         ),
 
-        const NavigationDrawerDestination(
-          icon: Icon(Icons.home_outlined),
-          label: Text('Dashboard'),
+        ...appMenuItems.map(
+          (item) => NavigationDrawerDestination(
+            icon: Icon(item.icon),
+            label: Text(item.titleKey),
+          ),
         ),
 
         const Padding(

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/router/app_router_notifier.dart';
 import '../../features/auth/presentation/presentation.dart';
 import '../../features/dashboard/presentation/presentation.dart';
+import '../../features/stores/presentation/presentation.dart';
 
 final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
@@ -25,6 +26,10 @@ final goRouterProvider = Provider((ref) {
 
       //Private routes
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/stores',
+        builder: (context, state) => const StoresScreen(),
+      ),
     ],
     redirect: (context, state) {
       final authStatus = goRouterNotifier.authStatus;

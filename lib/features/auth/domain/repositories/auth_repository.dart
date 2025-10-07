@@ -1,4 +1,4 @@
-import '../entities/entities.dart';
+import 'package:klanetmarketers/features/auth/domain/entities/entities.dart';
 
 abstract class AuthRepository {
   Future<void> register();
