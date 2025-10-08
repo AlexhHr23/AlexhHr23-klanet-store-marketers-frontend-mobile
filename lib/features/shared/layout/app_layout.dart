@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/shared/widgets/side_menu.dart';
+import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
 
 import '../providers/providers.dart';
 
@@ -11,8 +12,14 @@ import '../providers/providers.dart';
 class AppLayout extends ConsumerWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;
   final Widget body;
+  final List<CustomFloatingButton>? floatingActionButton;
 
-  const AppLayout({super.key, this.scaffoldKey, required this.body});
+  const AppLayout({
+    super.key,
+    this.scaffoldKey,
+    required this.body,
+    this.floatingActionButton,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,6 +40,11 @@ class AppLayout extends ConsumerWidget {
         centerTitle: true,
       ),
       body: body,
+      floatingActionButton: Column(
+        spacing: 10,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: floatingActionButton ?? [],
+      ),
     );
   }
 }

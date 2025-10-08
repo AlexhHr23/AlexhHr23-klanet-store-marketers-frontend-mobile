@@ -1,0 +1,22 @@
+import 'package:klanetmarketers/features/stores/domain/domain.dart';
+import 'package:klanetmarketers/features/stores/infrastructure/datasources/stores_datasource_impl.dart';
+
+class StoresRepositoryImpl extends StoresRepository {
+  final StoresDatasourceImpl datasource;
+
+  StoresRepositoryImpl(this.datasource);
+  @override
+  Future<List<MarketerStore>> getStores(String country) {
+    return datasource.getStores(country);
+  }
+
+  @override
+  Future<void> getBannersByStore(String country, String id) {
+    return datasource.getProductsByStore(country, id);
+  }
+
+  @override
+  Future<void> getProductsByStore(String country, String id) {
+    return datasource.getProductsByStore(country, id);
+  }
+}
