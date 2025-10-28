@@ -16,6 +16,10 @@ class StoreNotifier extends StateNotifier<StoreState> {
     state = state.copyWith(selectedCountry: countryId);
   }
 
+  void selectStore(MarketerStore store) {
+    state = state.copyWith(selectedStore: store);
+  }
+
   Future<void> getStores() async {
     final selectedCountry = state.selectedCountry;
     if (selectedCountry == null) return;
@@ -23,7 +27,11 @@ class StoreNotifier extends StateNotifier<StoreState> {
     state = state.copyWith(isLoading: true, stores: []);
     try {
       final stores = await storesRepository.getStores(selectedCountry);
-      state = state.copyWith(stores: stores, isLoading: false);
+      state = state.copyWith(
+        stores: stores,
+        isLoading: false,
+        hasSearched: true,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false);
       rethrow;
@@ -36,12 +44,14 @@ class StoreState {
   final List<MarketerStore> stores;
   final bool isLoading;
   final bool hasSearched;
+  final MarketerStore? selectedStore;
 
   StoreState({
-    this.selectedCountry,
-    this.stores = const [],
     this.isLoading = false,
     this.hasSearched = false,
+    this.selectedCountry,
+    this.stores = const [],
+    this.selectedStore,
   });
 
   StoreState copyWith({
@@ -49,12 +59,14 @@ class StoreState {
     List<MarketerStore>? stores,
     bool? isLoading,
     bool? hasSearched,
+    MarketerStore? selectedStore,
   }) {
     return StoreState(
       selectedCountry: selectedCountry ?? this.selectedCountry,
       stores: stores ?? this.stores,
       isLoading: isLoading ?? this.isLoading,
       hasSearched: hasSearched ?? this.hasSearched,
+      selectedStore: selectedStore ?? this.selectedStore,
     );
   }
 }

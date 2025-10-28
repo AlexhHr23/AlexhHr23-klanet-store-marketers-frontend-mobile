@@ -4,6 +4,7 @@ import 'package:klanetmarketers/features/shared/layout/app_layout.dart';
 import 'package:klanetmarketers/features/shared/providers/country_provider.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/store_provider.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
+import 'package:klanetmarketers/features/stores/presentation/widgets/widgets.dart';
 
 import '../../../shared/widgets/widgets.dart'; // si usas colores personalizados
 
@@ -16,7 +17,6 @@ class StoresScreen extends ConsumerWidget {
 
     final countriesState = ref.watch(countryProvider);
     final countries = countriesState.countries;
-
     final storeState = ref.watch(storeProvider);
     final storeNotifier = ref.read(storeProvider.notifier);
 
@@ -102,32 +102,14 @@ class StoresScreen extends ConsumerWidget {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final store = storeState.stores[index];
-                        return Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            title: Text(
-                              store.nombre,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            subtitle: Text(
-                              store.slug,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                            leading: const Icon(
-                              Icons.store_mall_directory,
-                              color: Colors.blueAccent,
-                            ),
-                          ),
+                        return StoreCard(
+                          store: store,
+                          onEdit: () => print('Editar ${store.nombre}'),
+                          onDelete: () => print('Eliminar ${store.nombre}'),
+                          onViewBanners: () =>
+                              print('Ver banners de ${store.nombre}'),
+                          onViewProducts: () =>
+                              print('Ver productos de ${store.nombre}'),
                         );
                       },
                     );
@@ -161,6 +143,13 @@ class StoresScreen extends ConsumerWidget {
             await storeNotifier.getStores();
           },
         ),
+        if (storeState.hasSearched)
+          CustomFloatingButton(
+            heroTag: 'back',
+            iconData: Icons.add,
+            color: AppColors.primary,
+            onPressed: () {},
+          ),
       ],
     );
   }
