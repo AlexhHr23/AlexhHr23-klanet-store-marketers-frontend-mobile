@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 
-class CustomTextFormField extends StatelessWidget {
+class CustomTextArea extends StatelessWidget {
   final String? label;
   final String? hint;
   final String? errorMessage;
   final String? initialValue;
-  final bool obscureText;
-  final TextInputType? keyboardType;
+  final TextInputType keyboardType;
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
+  final int minLines;
+  final int maxLines;
 
-  const CustomTextFormField({
+  const CustomTextArea({
     super.key,
     this.label,
     this.hint,
     this.errorMessage,
     this.initialValue,
-    this.obscureText = false,
-    this.keyboardType = TextInputType.text,
+    this.keyboardType = TextInputType.multiline,
     this.onChanged,
     this.validator,
+    this.minLines = 4,
+    this.maxLines = 8,
   });
 
   @override
@@ -28,7 +30,7 @@ class CustomTextFormField extends StatelessWidget {
 
     final border = OutlineInputBorder(
       borderSide: const BorderSide(color: Colors.transparent),
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(20),
     );
 
     const borderRadius = Radius.circular(15);
@@ -52,10 +54,11 @@ class CustomTextFormField extends StatelessWidget {
       child: TextFormField(
         onChanged: onChanged,
         validator: validator,
-        obscureText: obscureText,
-        initialValue: initialValue,
         keyboardType: keyboardType,
-        style: const TextStyle(fontSize: 20, color: Colors.black54),
+        minLines: minLines,
+        initialValue: initialValue,
+        maxLines: maxLines,
+        style: const TextStyle(fontSize: 18, color: Colors.black54, height: 1.4),
         decoration: InputDecoration(
           floatingLabelStyle: const TextStyle(
             color: Colors.black,
@@ -65,17 +68,17 @@ class CustomTextFormField extends StatelessWidget {
           enabledBorder: border,
           focusedBorder: border,
           errorBorder: border.copyWith(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Colors.transparent),
           ),
           focusedErrorBorder: border.copyWith(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Colors.transparent),
           ),
-          isDense: true,
+          alignLabelWithHint: true,
           label: label != null ? Text(label!) : null,
           hintText: hint,
           errorText: errorMessage,
           focusColor: colors.primary,
-          // icon: Icon( Icons.supervised_user_circle_outlined, color: colors.primary, )
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
       ),
     );

@@ -5,6 +5,12 @@ class StoresRepositoryImpl extends StoresRepository {
   final StoresDatasourceImpl datasource;
 
   StoresRepositoryImpl(this.datasource);
+
+   @override
+  Future<MarketerStore> createUpdateStore(Map<String, dynamic> storeLike, String country) {
+    return datasource.createUpdateStore(storeLike, country);
+  }
+
   @override
   Future<List<MarketerStore>> getStores(String country) {
     return datasource.getStores(country);
@@ -19,4 +25,5 @@ class StoresRepositoryImpl extends StoresRepository {
   Future<void> getProductsByStore(String country, String id) {
     return datasource.getProductsByStore(country, id);
   }
+  
 }

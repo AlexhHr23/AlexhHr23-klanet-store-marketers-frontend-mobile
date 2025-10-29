@@ -17,6 +17,35 @@ class StoresDatasourceImpl extends StoresDatasource {
           },
         ),
       );
+
+  @override
+  Future<MarketerStore> createUpdateStore( Map<String, dynamic> storeLike, String country ) async {
+    try {
+      final int? storeId = storeLike["id"];
+      final String method = (storeId == null) ? 'POST' : "PUT";
+      final String url = (storeId == null)
+          ? '/stores/$country'
+          : '/stores/$country/$storeId';
+
+      storeLike.remove('id');
+      final response = await dio.request(
+        url,
+        data: storeLike,
+        options: Options(method: method),
+      );
+      final store = MarketerStoreMapper.jsonToEntity(response.data["data"]);
+      return store;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        throw Exception('Error al obtener los paises');
+      }
+      throw Exception('Error al obtener los paises');
+    } catch (error) {
+      throw Exception(error);
+    }
+  }
+
   @override
   Future<List<MarketerStore>> getStores(String country) async {
     try {

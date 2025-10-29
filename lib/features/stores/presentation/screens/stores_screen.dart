@@ -106,7 +106,7 @@ class StoresScreen extends ConsumerWidget {
                         return StoreCard(
                           store: store,
                           onEdit: () => {
-                            storeNotifier.selectStore(store),
+                            storeNotifier.selectStore(store, store.id),
                             context.push('/form-stores')
                           },
                           onDelete: () => print('Eliminar ${store.nombre}'),
@@ -149,10 +149,13 @@ class StoresScreen extends ConsumerWidget {
         ),
         if (storeState.hasSearched)
           CustomFloatingButton(
-            heroTag: 'back',
+            heroTag: 'add',
             iconData: Icons.add,
             color: AppColors.primary,
-            onPressed: () {},
+            onPressed: () {
+              storeNotifier.selectStore(null,0);
+              context.push('/form-stores');
+            },
           ),
       ],
     );

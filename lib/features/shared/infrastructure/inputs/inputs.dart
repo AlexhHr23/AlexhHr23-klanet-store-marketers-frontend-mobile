@@ -7,3 +7,4 @@ export 'phone_number.dart';
 export 'ms_clarity.dart';
 export 'gl_analytics.dart';
 export 'fb_pixel.dart';
+export 'text_form.dart';

@@ -12,6 +12,21 @@ class StoreNotifier extends StateNotifier<StoreState> {
   final StoresRepository storesRepository;
   StoreNotifier({required this.storesRepository}) : super(StoreState());
 
+  MarketerStore newEmptyStore() {
+    return MarketerStore(
+      banners: [],
+      codigo: '',
+      descripcion: '',
+      id: 0,
+      idUsuario: '',
+      moneda: 'MXN',
+      msClarity: '',
+      nombre: '',
+      pais: 'mx',
+      slug: '',
+    );
+  }
+
   void selectCountry(String countryId) {
     state = state.copyWith(selectedCountry: countryId);
   }
@@ -20,8 +35,36 @@ class StoreNotifier extends StateNotifier<StoreState> {
     state = state.copyWith(selectCurrecy: currency);
   }
 
-  void selectStore(MarketerStore store) {
-    state = state.copyWith(selectedStore: store);
+  void selectStore(MarketerStore? store, int id) {
+    final newStore = (store == null && id == 0) ? newEmptyStore() : store;
+    state = state.copyWith(selectedStore: newStore);
+  }
+
+  Future<bool> createUpdateStore(
+    Map<String, dynamic> storeLike,
+    String country,
+  ) async {
+    try {
+      final store = await storesRepository.createUpdateStore(
+        storeLike,
+        country,
+      );
+      final isStoreList = state.stores.any((element) => element.id == store.id);
+
+      if (!isStoreList) {
+        this.getStores();
+        return true;
+      }
+
+      state = state.copyWith(
+        stores: state.stores
+            .map((element) => (element.id == store.id) ? store : element)
+            .toList(),
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> getStores() async {
