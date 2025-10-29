@@ -26,9 +26,15 @@ final goRouterProvider = Provider((ref) {
 
       //Private routes
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+
       GoRoute(
         path: '/stores',
         builder: (context, state) => const StoresScreen(),
+      ),
+
+      GoRoute(
+        path: '/form-stores',
+        builder: (context, state) => const CreateEditAddresScreen(),
       ),
     ],
     redirect: (context, state) {

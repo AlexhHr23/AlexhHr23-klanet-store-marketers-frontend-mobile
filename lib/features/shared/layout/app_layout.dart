@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
+import 'package:klanetmarketers/features/shared/providers/currency_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/side_menu.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
 
@@ -25,6 +26,7 @@ class AppLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final key = scaffoldKey ?? GlobalKey<ScaffoldState>();
     ref.watch(countryProvider);
+    ref.watch(currencyProvider);
     return Scaffold(
       key: key,
       drawer: SideMenu(scaffoldKey: key),

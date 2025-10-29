@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/features/shared/layout/app_layout.dart';
 import 'package:klanetmarketers/features/shared/providers/country_provider.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/store_provider.dart';
@@ -104,7 +105,10 @@ class StoresScreen extends ConsumerWidget {
                         final store = storeState.stores[index];
                         return StoreCard(
                           store: store,
-                          onEdit: () => print('Editar ${store.nombre}'),
+                          onEdit: () => {
+                            storeNotifier.selectStore(store),
+                            context.push('/form-stores')
+                          },
                           onDelete: () => print('Eliminar ${store.nombre}'),
                           onViewBanners: () =>
                               print('Ver banners de ${store.nombre}'),

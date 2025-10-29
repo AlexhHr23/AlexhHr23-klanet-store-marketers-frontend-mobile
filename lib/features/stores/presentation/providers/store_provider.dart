@@ -16,6 +16,10 @@ class StoreNotifier extends StateNotifier<StoreState> {
     state = state.copyWith(selectedCountry: countryId);
   }
 
+  void selectCurrency(String currency) {
+    state = state.copyWith(selectCurrecy: currency);
+  }
+
   void selectStore(MarketerStore store) {
     state = state.copyWith(selectedStore: store);
   }
@@ -41,6 +45,7 @@ class StoreNotifier extends StateNotifier<StoreState> {
 
 class StoreState {
   final String? selectedCountry;
+  final String? selectCurrecy;
   final List<MarketerStore> stores;
   final bool isLoading;
   final bool hasSearched;
@@ -50,12 +55,14 @@ class StoreState {
     this.isLoading = false,
     this.hasSearched = false,
     this.selectedCountry,
+    this.selectCurrecy,
     this.stores = const [],
     this.selectedStore,
   });
 
   StoreState copyWith({
     String? selectedCountry,
+    String? selectCurrecy,
     List<MarketerStore>? stores,
     bool? isLoading,
     bool? hasSearched,
@@ -63,6 +70,7 @@ class StoreState {
   }) {
     return StoreState(
       selectedCountry: selectedCountry ?? this.selectedCountry,
+      selectCurrecy: selectCurrecy ?? this.selectCurrecy,
       stores: stores ?? this.stores,
       isLoading: isLoading ?? this.isLoading,
       hasSearched: hasSearched ?? this.hasSearched,
