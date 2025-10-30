@@ -53,14 +53,6 @@ class _AddressForm extends ConsumerWidget {
       storeFormProvider(storeState.selectedStore!),
     );
 
-    if (currencyState.currencies.isNotEmpty &&
-        storeState.selectCurrecy == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
-            .read(storeProvider.notifier)
-            .selectCurrency(storeFormState.currency);
-      });
-    }
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -102,7 +94,7 @@ class _AddressForm extends ConsumerWidget {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 isExpanded: true,
-                value: storeState.selectCurrecy,
+                value: storeFormState.currency,
                 items: currencyState.currencies.map((country) {
                   return DropdownMenuItem<String>(
                     value: country.code,
@@ -113,9 +105,8 @@ class _AddressForm extends ConsumerWidget {
                   );
                 }).toList(),
                 onChanged: (value) {
-                  if (value != null) {
-                    ref.read(storeProvider.notifier).selectCurrency(value);
-                  }
+                  print('value: $value');
+                  ref.read(storeFormProvider(storeState.selectedStore!).notifier).onSelectCurrencyChanged(value!);
                 },
               ),
             ),

@@ -26,4 +26,9 @@ class StoresRepositoryImpl extends StoresRepository {
     return datasource.getProductsByStore(country, id);
   }
   
+  @override
+   Future<Map<String, dynamic>> deleteStore(String country, int storeId) {
+    return datasource.deleteStore(country, storeId);
+  }
+  
 }

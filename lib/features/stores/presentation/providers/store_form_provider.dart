@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/providers.dart';
 import 'package:klanetmarketers/features/shared/infrastructure/inputs/inputs.dart';
+import 'package:klanetmarketers/features/shared/providers/providers.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/store_provider.dart';
 import '../../domain/entities/store.dart';
 
@@ -10,15 +11,13 @@ final storeFormProvider = StateNotifierProvider.autoDispose
       final createUpdateCallback = ref
           .watch(storeProvider.notifier)
           .createUpdateStore;
-      final userId = ref.watch(authProvider).user?.uid;
-      final countryCode = ref.watch(storeProvider).selectedCountry;
-      final currency = ref.watch(storeProvider).selectCurrecy;
+      final userId = ref.watch(authProvider).user?.uid ?? '';
+      final countryCode = ref.watch(storeProvider).selectedCountry ?? ref.watch(countryProvider).countries.first.id;
       return StoreFormNotifier(
         onSubmitCallback: createUpdateCallback,
         store: store,
-        userId: userId!,
-        countryCode: countryCode!,
-        currency: currency!
+        userId: userId,
+        countryCode: countryCode,
       );
     });
 
@@ -27,18 +26,16 @@ class StoreFormNotifier extends StateNotifier<StoreFormState> {
   onSubmitCallback;
   final String userid = '';
   final String countryCode = '';
-  final String currency = '';
 
   StoreFormNotifier({
     this.onSubmitCallback,
     required final MarketerStore store,
     required final String userId,
     required final String countryCode,
-    required final String currency
   }) : super(
          StoreFormState(
            id: store.id,
-           currency: currency,
+           currency: store.moneda,
            description: TextFormInput.dirty(store.descripcion),
            userId: userId,
            name: TextFormInput.dirty(store.nombre),
@@ -98,6 +95,10 @@ class StoreFormNotifier extends StateNotifier<StoreFormState> {
         TextFormInput.dirty(value),
       ]),
     );
+  }
+
+  void onSelectCurrencyChanged(String value) {
+    state = state.copyWith(currency: value);
   }
 }
 

@@ -12,6 +12,29 @@ import '../../../shared/widgets/widgets.dart'; // si usas colores personalizados
 class StoresScreen extends ConsumerWidget {
   const StoresScreen({super.key});
 
+  void openDialog(BuildContext context, WidgetRef ref, int storeId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Borrar tienda'),
+        content: const Text('Estas borrar esta tiienda?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ref.read(storeProvider.notifier).deleteStore(storeId);
+              context.pop();
+            },
+            child: const Text('Aceptar'),
+          ),
+          TextButton(
+            onPressed: () => context.pop(),
+            child: const Text('Cancelar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -109,7 +132,7 @@ class StoresScreen extends ConsumerWidget {
                             storeNotifier.selectStore(store, store.id),
                             context.push('/form-stores')
                           },
-                          onDelete: () => print('Eliminar ${store.nombre}'),
+                          onDelete: () => openDialog(context, ref, store.id),
                           onViewBanners: () =>
                               print('Ver banners de ${store.nombre}'),
                           onViewProducts: () =>

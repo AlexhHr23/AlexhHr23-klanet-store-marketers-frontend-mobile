@@ -19,7 +19,10 @@ class StoresDatasourceImpl extends StoresDatasource {
       );
 
   @override
-  Future<MarketerStore> createUpdateStore( Map<String, dynamic> storeLike, String country ) async {
+  Future<MarketerStore> createUpdateStore(
+    Map<String, dynamic> storeLike,
+    String country,
+  ) async {
     try {
       final int? storeId = storeLike["id"];
       final String method = (storeId == null) ? 'POST' : "PUT";
@@ -38,9 +41,9 @@ class StoresDatasourceImpl extends StoresDatasource {
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
       if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
-        throw Exception('Error al obtener los paises');
+        throw Exception('Error al crear la tienda');
       }
-      throw Exception('Error al obtener los paises');
+      throw Exception('Error al crear la tienda');
     } catch (error) {
       throw Exception(error);
     }
@@ -64,6 +67,33 @@ class StoresDatasourceImpl extends StoresDatasource {
     } catch (e) {
       // print('Error no controlado: $e');
       throw Exception(e);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> deleteStore(String country, int storeId) async {
+    final res = {"status": '', "msg": ''};
+
+    try {
+      final response = await dio.delete('/stores/$country/$storeId');
+
+      if (response.data["status"] == 'success') {
+        res["status"] = 'success';
+        res["msg"] = response.data["msg"] ?? 'Tienda eliminada correctamente';
+        return res;
+      } else {
+        res["status"] = 'error';
+        res["msg"] = response.data["msg"] ?? 'Error al eliminar la tienda';
+        return res;
+      }
+    } on DioException catch (error) {
+      res["status"] = 'error';
+      res["msg"] = error.response?.data["msg"] ?? 'Error al eliminar la tienda';
+      return res;
+    } catch (error) {
+      res["status"] = 'error';
+      res["msg"] = 'Error inesperado: $error';
+      return res;
     }
   }
 

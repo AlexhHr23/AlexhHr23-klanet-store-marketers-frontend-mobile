@@ -67,6 +67,20 @@ class StoreNotifier extends StateNotifier<StoreState> {
     }
   }
 
+  Future<void> deleteStore(int storeId) async {
+    final selectCoutry = state.selectedCountry;
+    if(selectCoutry == null) return ;
+    state.copyWith(isLoading: true);
+    try  {
+      await storesRepository.deleteStore(selectCoutry, storeId);
+       state.copyWith(isLoading: false);
+       await getStores();
+    }catch(e) {
+      state.copyWith(isLoading: false);
+      rethrow;
+    }
+  }
+
   Future<void> getStores() async {
     final selectedCountry = state.selectedCountry;
     if (selectedCountry == null) return;
@@ -87,6 +101,7 @@ class StoreNotifier extends StateNotifier<StoreState> {
 }
 
 class StoreState {
+   final String errorMessage;
   final String? selectedCountry;
   final String? selectCurrecy;
   final List<MarketerStore> stores;
@@ -97,6 +112,7 @@ class StoreState {
   StoreState({
     this.isLoading = false,
     this.hasSearched = false,
+    this.errorMessage = '',
     this.selectedCountry,
     this.selectCurrecy,
     this.stores = const [],
@@ -106,6 +122,7 @@ class StoreState {
   StoreState copyWith({
     String? selectedCountry,
     String? selectCurrecy,
+    String? errorMessage,
     List<MarketerStore>? stores,
     bool? isLoading,
     bool? hasSearched,
@@ -114,6 +131,7 @@ class StoreState {
     return StoreState(
       selectedCountry: selectedCountry ?? this.selectedCountry,
       selectCurrecy: selectCurrecy ?? this.selectCurrecy,
+      errorMessage: errorMessage ?? this.errorMessage,
       stores: stores ?? this.stores,
       isLoading: isLoading ?? this.isLoading,
       hasSearched: hasSearched ?? this.hasSearched,
