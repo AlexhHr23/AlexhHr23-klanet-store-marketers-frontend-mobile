@@ -98,9 +98,30 @@ class StoresDatasourceImpl extends StoresDatasource {
   }
 
   @override
-  Future<void> getBannersByStore(String country, String id) {
-    // TODO: implement getBannersByStore
+  Future<MarketerStore> createUpdateBanner(Map<String, dynamic> storeLike, String country, String storeId) {
+    // TODO: implement createUpdateBanner
     throw UnimplementedError();
+  }
+
+  @override
+  Future<List<BannerStore>> getBannersByStore(String country, int storeId) async{
+     try {
+      final response = await dio.get('/store-banners/$country/$storeId');
+      final banners = <BannerStore>[];
+      for (final banner in response.data['zdata']) {
+        banners.add(BannerStoreMapper.jsonToEntity(banner));
+      }
+      return banners;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        throw Exception('Error al obtener los paises');
+      }
+      throw Exception('Error al obtener los paises');
+    } catch (e) {
+      // print('Error no controlado: $e');
+      throw Exception(e);
+    }
   }
 
   @override
@@ -108,4 +129,5 @@ class StoresDatasourceImpl extends StoresDatasource {
     // TODO: implement getProductsByStore
     throw UnimplementedError();
   }
+  
 }

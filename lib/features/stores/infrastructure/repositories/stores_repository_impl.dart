@@ -16,9 +16,15 @@ class StoresRepositoryImpl extends StoresRepository {
     return datasource.getStores(country);
   }
 
+    @override
+  Future<MarketerStore> createUpdateBanner(Map<String, dynamic> storeLike, String country, String storeId) {
+    // TODO: implement createUpdateBanner
+    throw UnimplementedError();
+  }
+  
   @override
-  Future<void> getBannersByStore(String country, String id) {
-    return datasource.getProductsByStore(country, id);
+ Future<List<BannerStore>> getBannersByStore(String country, int storeId) {
+    return datasource.getBannersByStore(country, storeId);
   }
 
   @override
@@ -30,5 +36,6 @@ class StoresRepositoryImpl extends StoresRepository {
    Future<Map<String, dynamic>> deleteStore(String country, int storeId) {
     return datasource.deleteStore(country, storeId);
   }
+  
   
 }

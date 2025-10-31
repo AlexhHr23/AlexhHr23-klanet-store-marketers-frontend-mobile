@@ -31,10 +31,23 @@ final goRouterProvider = Provider((ref) {
         path: '/stores',
         builder: (context, state) => const StoresScreen(),
       ),
-
+      GoRoute(
+        path: '/stores/banners/:storeId',
+        builder: (context, state) => BannersStoreScreen(
+          storeId: state.pathParameters['storeId'] ?? 'no-id',
+          country: state.uri.queryParameters['country'] ?? 'no-country'
+        ),
+      ),
       GoRoute(
         path: '/form-stores',
         builder: (context, state) => const CreateEditAddresScreen(),
+      ),
+       GoRoute(
+        path: '/form-banners/:storeId',
+        builder: (context, state) => CreateEditBanner(
+          storeId: state.pathParameters['storeId'] ?? 'no-id',
+          country: state.uri.queryParameters['country'] ?? 'no-country'
+        ),
       ),
     ],
     redirect: (context, state) {

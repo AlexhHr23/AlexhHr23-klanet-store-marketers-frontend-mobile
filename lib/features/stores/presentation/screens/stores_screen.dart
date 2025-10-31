@@ -57,13 +57,6 @@ class StoresScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text(
-            //   'Tiendas por país',
-            //   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            //     fontWeight: FontWeight.bold,
-            //     color: Colors.black87,
-            //   ),
-            // ),
             const SizedBox(height: 16),
 
             InputDecorator(
@@ -133,8 +126,7 @@ class StoresScreen extends ConsumerWidget {
                             context.push('/form-stores')
                           },
                           onDelete: () => openDialog(context, ref, store.id),
-                          onViewBanners: () =>
-                              print('Ver banners de ${store.nombre}'),
+                          onViewBanners: () => context.push('/stores/banners/${store.id}?country=${storeState.selectedCountry}'),
                           onViewProducts: () =>
                               print('Ver productos de ${store.nombre}'),
                         );

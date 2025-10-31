@@ -1,6 +1,7 @@
 class BannerStore {
     String activo;
     String archivoImagen;
+    String archivoImagenMovil;
     int duracion;
     String estado;
     DateTime fechaCreacion;
@@ -17,6 +18,7 @@ class BannerStore {
     BannerStore({
         required this.activo,
         required this.archivoImagen,
+        required this.archivoImagenMovil,
         required this.duracion,
         required this.estado,
         required this.fechaCreacion,

@@ -4,6 +4,7 @@ class BannerStoreMapper {
   static BannerStore jsonToEntity(Map<String, dynamic> json) => BannerStore(
     activo: json["activo"] ?? '',
     archivoImagen: json["archivo_imagen"] ?? '',
+    archivoImagenMovil: json["archivo_imagen_movil"] ?? '',
     duracion: json["duracion"] ?? 0,
     estado: json["estado"] ?? '',
     fechaCreacion: json["fecha_creacion"] != null
