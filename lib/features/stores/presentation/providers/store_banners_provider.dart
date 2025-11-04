@@ -25,6 +25,60 @@ class StoreBannersNotifier extends StateNotifier<StoreBannersState> {
     getBannerByStore(country, storeId);
   }
 
+
+  BannerStore newEmptyBanner() {
+    return BannerStore(
+      activo: '0', 
+      archivoImagen: '', 
+      archivoImagenMovil: '', 
+      duracion: 0, 
+      estado: '', 
+      fechaCreacion: DateTime.now(), 
+      fechaFin: DateTime.now(), 
+      fechaInicio: DateTime.now(), 
+      fechaModificacion: DateTime.now(), 
+      id: 0, 
+      idTienda: state.storeId, 
+      idUsuario: '', 
+      orden: 0, 
+      texto: '', 
+      url: ''
+    );
+  }
+
+  void selectBanner(BannerStore? banner) {
+    final newBanner = (banner == null) ? newEmptyBanner() : banner;
+    state = state.copyWith(selectedBanner: newBanner);
+  }
+
+   Future<bool> createUpdateBanners(
+    Map<String, dynamic> bannerLike,
+    String country,
+  ) async {
+    try {
+      final banner = await storesRepository.createUpdateBanner(
+        bannerLike,
+        country,
+        storeId.toString()
+      );
+      final isStoreList = state.banners.any((element) => element.id == banner.id);
+
+      if (!isStoreList) {
+        getBannerByStore(state.country, state.storeId);
+        return true;
+      }
+
+      state = state.copyWith(
+        banners: state.banners
+            .map((element) => (element.id == banner.id) ? banner : element)
+            .toList(),
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> getBannerByStore(String country, int storeId ) async{
     state = state.copyWith(isLoading: true);
 
@@ -43,8 +97,9 @@ class StoreBannersState {
   final String country;
   final bool isLoading;
   final List<BannerStore> banners;
+  BannerStore? selectedBanner;
 
-  StoreBannersState({required this.storeId, required this.country,this.isLoading = false, this.banners = const []});
+  StoreBannersState({required this.storeId, required this.country,this.isLoading = false, this.banners = const [], this.selectedBanner });
 
   get createUpdateStore => null;
 
@@ -52,13 +107,15 @@ class StoreBannersState {
     int? storeId,
     String? country,
     bool? isLoading,
-    List<BannerStore>? banners
+    List<BannerStore>? banners,
+    BannerStore? selectedBanner
   }) {
     return StoreBannersState(
       storeId: storeId ?? this.storeId,
       country: country ?? this.country,
       isLoading: isLoading ?? this.isLoading,
-      banners: banners ?? this.banners
+      banners: banners ?? this.banners,
+      selectedBanner: selectedBanner ?? this.selectedBanner
     );
   }
 }

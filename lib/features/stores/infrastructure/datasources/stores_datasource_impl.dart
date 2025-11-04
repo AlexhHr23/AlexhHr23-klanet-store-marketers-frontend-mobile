@@ -98,9 +98,31 @@ class StoresDatasourceImpl extends StoresDatasource {
   }
 
   @override
-  Future<MarketerStore> createUpdateBanner(Map<String, dynamic> storeLike, String country, String storeId) {
-    // TODO: implement createUpdateBanner
-    throw UnimplementedError();
+  Future<BannerStore> createUpdateBanner(Map<String, dynamic> bannerLike, String country, String storeId) async{
+    try {
+      final int? storeId = bannerLike["id"];
+      final String method = (storeId == null) ? 'POST' : "PUT";
+      final String url = (storeId == null)
+          ? '/store-banners/$country'
+          : '/store-banners/$country/$storeId';
+
+      bannerLike.remove('id');
+      final response = await dio.request(
+        url,
+        data: bannerLike,
+        options: Options(method: method),
+      );
+      final banner = BannerStoreMapper.jsonToEntity(response.data["data"]);
+      return banner;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        throw Exception('Error al crear la tienda');
+      }
+      throw Exception('Error al crear la tienda');
+    } catch (error) {
+      throw Exception(error);
+    }
   }
 
   @override

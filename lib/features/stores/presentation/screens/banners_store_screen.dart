@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/shared/layout/app_layout.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/store_banners_provider.dart';
@@ -132,7 +133,8 @@ class BannersStoreScreen extends ConsumerWidget {
                                             color: Colors.blue),
                                         tooltip: 'Editar',
                                         onPressed: () {
-                                          // TODO: implementar editar
+                                          ref.read(bannersStoreProvider((country, int.parse(storeId))).notifier).selectBanner(banner);
+                                          context.push('/form-banners/${banner.idTienda}?country=$country');
                                         },
                                       ),
                                       IconButton(
@@ -140,7 +142,8 @@ class BannersStoreScreen extends ConsumerWidget {
                                             color: Colors.red),
                                         tooltip: 'Eliminar',
                                         onPressed: () {
-                                          // TODO: implementar eliminar
+                                          // ref.read(bannersStoreProvider((country, int.parse(storeId))).notifier).selectBanner(null);
+                                          // context.push('/form-banners/${banner.id}?country=$country');
                                         },
                                       ),
                                     ],
@@ -160,7 +163,8 @@ class BannersStoreScreen extends ConsumerWidget {
             iconData: Icons.add,
             color: AppColors.primary,
             onPressed: () {
-              
+               ref.read(bannersStoreProvider((country, int.parse(storeId))).notifier).selectBanner(null);
+              context.push('/form-banners/$storeId?country=$country');
             },
           ),
       ],

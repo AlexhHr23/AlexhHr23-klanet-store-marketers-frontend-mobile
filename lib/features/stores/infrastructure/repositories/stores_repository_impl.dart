@@ -17,9 +17,8 @@ class StoresRepositoryImpl extends StoresRepository {
   }
 
     @override
-  Future<MarketerStore> createUpdateBanner(Map<String, dynamic> storeLike, String country, String storeId) {
-    // TODO: implement createUpdateBanner
-    throw UnimplementedError();
+  Future<BannerStore> createUpdateBanner(Map<String, dynamic> bannerLike, String country, String storeId) {
+    return datasource.createUpdateBanner(bannerLike, country, storeId);
   }
   
   @override
