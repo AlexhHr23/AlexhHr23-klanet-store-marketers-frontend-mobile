@@ -148,7 +148,7 @@ class StoresDatasourceImpl extends StoresDatasource {
     bannerLike['archivo_imagen'] = desktopKey;
     bannerLike['archivo_imagen_movil'] = mobileKey;
 
-    print('bannerLike modificado: $bannerLike');
+    // print('bannerLike modificado: $bannerLike');
 
     final int? id = bannerLike["id"];
     final String method = (id == null) ? 'POST' : 'PUT';
@@ -200,9 +200,24 @@ class StoresDatasourceImpl extends StoresDatasource {
   }
 
   @override
-  Future<void> getProductsByStore(String country, String id) {
-    // TODO: implement getProductsByStore
-    throw UnimplementedError();
+  Future<List<ProductoStore>> getProductsByStore(String country, int storeId) async{
+   try {
+      final response = await dio.get('/store-product/$country/$storeId');
+      final products = <ProductoStore>[];
+      for (final product in response.data['zdata']) {
+        products.add(ProductStoreMapper.jsonToEntity(product));
+      }
+      return products;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        throw Exception('Error al obtener los paises');
+      }
+      throw Exception('Error al obtener los paises');
+    } catch (e) {
+      // print('Error no controlado: $e');
+      throw Exception(e);
+    }
   }
   
 }

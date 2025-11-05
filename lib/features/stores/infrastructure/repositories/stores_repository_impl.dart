@@ -26,15 +26,17 @@ class StoresRepositoryImpl extends StoresRepository {
     return datasource.getBannersByStore(country, storeId);
   }
 
-  @override
-  Future<void> getProductsByStore(String country, String id) {
-    return datasource.getProductsByStore(country, id);
-  }
-  
-  @override
+   @override
    Future<Map<String, dynamic>> deleteStore(String country, int storeId) {
     return datasource.deleteStore(country, storeId);
   }
+
+  @override
+   Future<List<ProductoStore>> getProductsByStore(String country, int storeId) {
+    return datasource.getProductsByStore(country, storeId);
+  }
+  
+ 
   
   
 }
