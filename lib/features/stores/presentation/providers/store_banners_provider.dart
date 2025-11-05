@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/features/stores/domain/domain.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/store_provider_repository.dart';
+import 'package:uuid/uuid.dart';
 
 final bannersStoreProvider = StateNotifierProvider.autoDispose.family<StoreBannersNotifier, StoreBannersState ,(String country, int storeId) >((ref, params) {
    final (country, storeId) = params;
@@ -100,8 +101,6 @@ class StoreBannersState {
   BannerStore? selectedBanner;
 
   StoreBannersState({required this.storeId, required this.country,this.isLoading = false, this.banners = const [], this.selectedBanner });
-
-  get createUpdateStore => null;
 
   StoreBannersState copyWith({
     int? storeId,

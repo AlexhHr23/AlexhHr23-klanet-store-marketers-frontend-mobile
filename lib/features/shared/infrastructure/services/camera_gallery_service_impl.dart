@@ -8,7 +8,7 @@ class CameraGalleryServiceImpl extends CameraGalleryServices{
   final ImagePicker _picker = ImagePicker();
 
   @override
-  Future<String?> selectPhto() async{
+  Future<XFile?> selectPhto() async{
     final XFile? photo = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
@@ -17,8 +17,7 @@ class CameraGalleryServiceImpl extends CameraGalleryServices{
     if(photo == null ) return null;
     
     print('Tenemos una imagen ${photo.path}');
-    return photo.path;
-
+    return photo;
   }
 
   @override

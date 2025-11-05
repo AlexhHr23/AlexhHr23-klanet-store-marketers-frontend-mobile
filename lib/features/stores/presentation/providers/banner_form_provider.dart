@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:klanetmarketers/features/shared/infrastructure/inputs/inputs.dart';
 import 'package:klanetmarketers/features/stores/domain/entities/entities.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/store_banners_provider.dart';
+
 
 final bannerFormProvider = StateNotifierProvider.autoDispose
     .family<
@@ -10,21 +12,19 @@ final bannerFormProvider = StateNotifierProvider.autoDispose
       StoreFormState,
       ({BannerStore banner, String country, int storeId})
     >((ref, params) {
-      final repo = ref.watch(
-        bannersStoreProvider((params.country, params.storeId)),
-      );
-      final createUpdateCallback = repo.createUpdateStore;
 
-      return StoreFormNotifier(
-        onSubmitCallback: createUpdateCallback,
-        banner: params.banner,
-        countryCode: params.country,
-        storeId: params.storeId.toString(),
-      );
-    });
+  final createUpdateCallback = ref.watch(bannersStoreProvider((params.country, params.storeId)).notifier).createUpdateBanners;
+
+  return StoreFormNotifier(
+    onSubmitCallback: createUpdateCallback,
+    banner: params.banner,
+    countryCode: params.country,
+    storeId: params.storeId.toString(),
+  );
+});
 
 class StoreFormNotifier extends StateNotifier<StoreFormState> {
-  final Future<bool> Function(Map<String, dynamic> storeLike)? onSubmitCallback;
+  final Future<bool> Function(Map<String, dynamic> storeLike, String country)? onSubmitCallback;
   final String countryCode;
   final String storeId;
 
@@ -34,122 +34,118 @@ class StoreFormNotifier extends StateNotifier<StoreFormState> {
     required this.countryCode,
     required this.storeId,
   }) : super(
-         StoreFormState(
-           id: banner.id,
-           fileImage: TextFormInput.dirty(banner.archivoImagen),
-           fileImageMobile: TextFormInput.dirty(banner.archivoImagenMovil),
-           duration: NumInput.dirty(banner.duracion),
-           state: banner.estado,
-           storeId: int.parse(storeId),
-           order: NumInput.dirty(banner.orden),
-           text: TextFormInput.dirty(banner.texto),
-         ),
-       );
+          StoreFormState(
+            id: banner.id,
+            fileImage: null,
+            fileImageMobile: null,
+            duration: NumInput.dirty(banner.duracion),
+            state: banner.estado,
+            storeId: int.parse(storeId),
+            order: NumInput.dirty(banner.orden),
+            text: TextFormInput.dirty(banner.texto),
+          ),
+        );
 
+  // ======== SUBMIT ==========
   Future<bool> onFormSubmit() async {
     _touchEverything();
     if (!state.isFormValid) return false;
+
     final bannerLike = {
       "id": (state.id == 0) ? null : state.id,
       "id_tienda": storeId,
-      "texto": state.text,
+      "texto": state.text.value,
       "url": '',
-      "orden": state.order,
-      "duracion": state.duration,
+      "orden": state.order.value,
+      "duracion": state.duration.value,
       "estado": state.state,
       "archivo_imagen": state.fileImage,
       "archivo_imagen_movil": state.fileImageMobile,
     };
 
     try {
-      print(bannerLike);
-      return await onSubmitCallback!(bannerLike);
-    } catch (e) {
+      print('bannerLike: $bannerLike');
+      print('archivo_imagen: ${state.fileImage?.path}');
+      print('archivo_imagen_movil: ${state.fileImageMobile?.path}');
+      print('countryCode: $countryCode');
+      return await onSubmitCallback!(bannerLike, countryCode);
+    } catch (e, s) {
       print('error: $e');
+      print('stack: $s');
       return false;
     }
   }
 
+
   void _touchEverything() {
     state = state.copyWith(
       isFormValid: Formz.validate([
-        TextFormInput.dirty(state.fileImage.value),
-        TextFormInput.dirty(state.fileImageMobile.value),
-        TextFormInput.dirty(state.text.value),
+        state.text,
+        state.order,
+        state.duration,
       ]),
     );
   }
 
-  void onSelectBannerChanged(String value) {
+  // ======== CAMBIO DE IMAGEN DESDE PICKER ==========
+  void onImageSelected(XFile? pickedFile) {
+    if (pickedFile == null) return;
     state = state.copyWith(
-      fileImage: TextFormInput.dirty(value),
-      isFormValid: Formz.validate([
-        TextFormInput.dirty(value),
-        TextFormInput.dirty(state.fileImageMobile.value),
-        TextFormInput.dirty(state.text.value),
-        NumInput.dirty(state.duration.value),
-        NumInput.dirty(state.order.value),
-      ]),
+      fileImage: pickedFile,
     );
   }
 
-  void onSelectBannerMobileChanged(String value) {
+  void onImageMobileSelected(XFile? pickedFile) {
+    if (pickedFile == null) return;
     state = state.copyWith(
-      fileImageMobile: TextFormInput.dirty(value),
-      isFormValid: Formz.validate([
-        TextFormInput.dirty(state.fileImage.value),
-        TextFormInput.dirty(value),
-        TextFormInput.dirty(state.text.value),
-        NumInput.dirty(state.duration.value),
-        NumInput.dirty(state.order.value),
-      ]),
+      fileImageMobile: pickedFile,
     );
   }
 
-   void onTitleChanged(String value) {
+  // ======== OTROS CAMPOS ==========
+  void onTitleChanged(String value) {
+    final textInput = TextFormInput.dirty(value);
     state = state.copyWith(
-      text: TextFormInput.dirty(value),
+      text: textInput,
       isFormValid: Formz.validate([
-        TextFormInput.dirty(value),
-        TextFormInput.dirty(state.fileImage.value),
-        TextFormInput.dirty(state.fileImageMobile.value),
+        textInput,
+        state.duration,
+        state.order,
       ]),
     );
   }
 
   void onDurationChanged(int value) {
+    final durationInput = NumInput.dirty(value);
     state = state.copyWith(
-      duration: NumInput.dirty(value),
+      duration: durationInput,
       isFormValid: Formz.validate([
-        TextFormInput.dirty(state.fileImage.value),
-        TextFormInput.dirty(state.fileImageMobile.value),
-        TextFormInput.dirty(state.text.value),
-        NumInput.dirty(value),
-        NumInput.dirty(state.order.value),
+        state.text,
+        durationInput,
+        state.order,
       ]),
     );
   }
 
   void onOrderChanged(int value) {
+    final orderInput = NumInput.dirty(value);
     state = state.copyWith(
-      order: NumInput.dirty(value),
+      order: orderInput,
       isFormValid: Formz.validate([
-        TextFormInput.dirty(state.fileImage.value),
-        TextFormInput.dirty(state.fileImageMobile.value),
-        TextFormInput.dirty(state.text.value),
-        NumInput.dirty(state.duration.value),
-        NumInput.dirty(value),
+        state.text,
+        state.duration,
+        orderInput,
       ]),
     );
   }
 }
 
 class StoreFormState {
-  final bool isLoading;
+   final bool isLoading;
   final bool isFormValid;
   final int id;
-  final TextFormInput fileImage;
-  final TextFormInput fileImageMobile;
+  final XFile? fileImage;
+  final XFile? fileImageMobile;
   final NumInput duration;
   final String state;
   final int storeId;
@@ -160,8 +156,8 @@ class StoreFormState {
     this.isLoading = false,
     this.isFormValid = false,
     this.id = 0,
-    this.fileImage = const TextFormInput.pure(),
-    this.fileImageMobile = const TextFormInput.pure(),
+    this.fileImage,
+    this.fileImageMobile,
     this.duration = const NumInput.dirty(),
     this.state = '',
     this.storeId = 0,
@@ -173,8 +169,8 @@ class StoreFormState {
     bool? isLoading,
     bool? isFormValid,
     int? id,
-    TextFormInput? fileImage,
-    TextFormInput? fileImageMobile,
+    XFile? fileImage,
+    XFile? fileImageMobile,
     NumInput? duration,
     String? state,
     int? storeId,

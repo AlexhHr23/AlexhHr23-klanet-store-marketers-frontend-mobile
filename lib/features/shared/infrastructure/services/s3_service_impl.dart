@@ -12,9 +12,6 @@ class S3ServiceImpl extends S3Service {
     final apiFaas = Environment.faas;
     final apiKeyFaas = Environment.faasApiKey;
 
-    print('apiFaas: $apiFaas');
-    print('apiKeyFaas: $apiKeyFaas');
-
     final url = '$apiFaas/request-signed-url';
 
     final response = await dio.post(

@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:klanetmarketers/config/constants/enviroment.dart';
+import 'package:klanetmarketers/features/shared/infrastructure/services/s3_service_impl.dart';
 import 'package:klanetmarketers/features/stores/domain/domain.dart';
 import 'package:klanetmarketers/features/stores/infrastructure/mappers/mappers.dart';
+import 'package:uuid/uuid.dart';
 
 class StoresDatasourceImpl extends StoresDatasource {
   final String accessToken;
   late final Dio dio;
+  final s3Service = S3ServiceImpl();
 
   StoresDatasourceImpl({required this.accessToken})
     : dio = Dio(
@@ -99,30 +103,79 @@ class StoresDatasourceImpl extends StoresDatasource {
 
   @override
   Future<BannerStore> createUpdateBanner(Map<String, dynamic> bannerLike, String country, String storeId) async{
-    try {
-      final int? storeId = bannerLike["id"];
-      final String method = (storeId == null) ? 'POST' : "PUT";
-      final String url = (storeId == null)
-          ? '/store-banners/$country'
-          : '/store-banners/$country/$storeId';
+   try {
+    final uuidDesktop = Uuid().v4();
+    final uuidMobile = Uuid().v4();
 
-      bannerLike.remove('id');
-      final response = await dio.request(
-        url,
-        data: bannerLike,
-        options: Options(method: method),
-      );
-      final banner = BannerStoreMapper.jsonToEntity(response.data["data"]);
-      return banner;
-    } on DioException catch (e) {
-      final statusCode = e.response?.statusCode;
-      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
-        throw Exception('Error al crear la tienda');
-      }
-      throw Exception('Error al crear la tienda');
-    } catch (error) {
-      throw Exception(error);
+    final XFile fileDesktop = bannerLike['archivo_imagen'];
+    final XFile fileMobile = bannerLike['archivo_imagen_movil'];
+
+    final desktopKey = 'banners/$uuidDesktop.webp';
+    final mobileKey = 'banners/$uuidMobile.webp';
+
+    print('BannerLike: $bannerLike');
+
+    final signedDesktopUrl = await s3Service.requestSignedUrl({
+      'method': 'PUT',
+      'bucket': 'MKT_BANNERS',
+      'key': desktopKey,
+      'ttl': 102400,
+    });
+
+    print('signedDesktopUrl: $signedDesktopUrl');
+
+    await s3Service.uploadFile(
+      signedDesktopUrl,
+      await fileDesktop.readAsBytes(),
+      'image/webp',
+    );
+
+    final signedMobileUrl = await s3Service.requestSignedUrl({
+      'method': 'PUT',
+      'bucket': 'MKT_BANNERS',
+      'key': mobileKey,
+      'ttl': 102400,
+    });
+
+  
+
+    await s3Service.uploadFile(
+      signedMobileUrl,
+      await fileMobile.readAsBytes(),
+      'image/webp',
+    );
+
+    bannerLike['archivo_imagen'] = desktopKey;
+    bannerLike['archivo_imagen_movil'] = mobileKey;
+
+    print('bannerLike modificado: $bannerLike');
+
+    final int? id = bannerLike["id"];
+    final String method = (id == null) ? 'POST' : 'PUT';
+    final String url = (id == null)
+        ? '/store-banners/$country'
+        : '/store-banners/$country/$id';
+
+    bannerLike.remove('id');
+
+    final response = await dio.request(
+      url,
+      data: bannerLike,
+      options: Options(method: method),
+    );
+
+    return BannerStoreMapper.jsonToEntity(response.data["data"]);
+  } on DioException catch (e,s) {
+    print(e);
+    print(s);
+    final statusCode = e.response?.statusCode;
+    if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+      throw Exception('Error al crear el banner');
     }
+    throw Exception('Error al crear el banner');
+  } catch (error) {
+    throw Exception(error);
+  }
   }
 
   @override

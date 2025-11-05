@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/shared/infrastructure/services/camera_gallery_service_impl.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
@@ -63,7 +64,7 @@ class _BannerForm extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _ImageGallery(image: bannerFormState.fileImage.value),
+          _ImageGallery(image: bannerFormState.fileImage),
           IconButton(
             onPressed: () async {
               final photoPath = await CameraGalleryServiceImpl().selectPhto();
@@ -76,12 +77,12 @@ class _BannerForm extends ConsumerWidget {
                       storeId: storeId,
                     ))).notifier,
                   )
-                  .onSelectBannerChanged(photoPath);
+                  .onImageSelected(photoPath);
             },
             icon: const Icon(Icons.add_a_photo),
           ),
           const SizedBox(height: 20),
-          _ImageGallery(image: bannerFormState.fileImageMobile.value),
+          _ImageGallery(image: bannerFormState.fileImageMobile),
           IconButton(
             onPressed: () async {
               final photoPath = await CameraGalleryServiceImpl().selectPhto();
@@ -94,7 +95,7 @@ class _BannerForm extends ConsumerWidget {
                       storeId: storeId,
                     ))).notifier,
                   )
-                  .onSelectBannerMobileChanged(photoPath);
+                  .onImageMobileSelected(photoPath);
             },
             icon: const Icon(Icons.add_a_photo),
           ),
@@ -171,6 +172,7 @@ class _BannerForm extends ConsumerWidget {
                   )
                     .onFormSubmit()
                     .then((value) {
+                      print('value: $value');
                       if (!value) return;
                       showSnackBar(context);
                       context.push('/stores/banners/$storeId?country=$country');
@@ -185,14 +187,14 @@ class _BannerForm extends ConsumerWidget {
 }
 
 class _ImageGallery extends StatelessWidget {
-  final String image;
+  final XFile? image;
   const _ImageGallery({required this.image});
 
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(20);
 
-    if (image.isEmpty) {
+    if (image == null || image!.path.isEmpty) {
       return ClipRRect(
         borderRadius: borderRadius,
         child: Image.asset(
@@ -205,10 +207,10 @@ class _ImageGallery extends StatelessWidget {
     }
 
     late ImageProvider imageProvider;
-    if (image.startsWith('http')) {
-      imageProvider = NetworkImage(image);
+    if (image!.path.startsWith('http')) {
+      imageProvider = NetworkImage(image!.path);
     } else {
-      imageProvider = FileImage(File(image));
+      imageProvider = FileImage(File(image!.path));
     }
 
     return ClipRRect(
@@ -217,6 +219,8 @@ class _ImageGallery extends StatelessWidget {
         fit: BoxFit.cover,
         image: imageProvider,
         placeholder: const AssetImage('assets/images/bottle-loader.gif'),
+        height: 150,
+        width: 300,
       ),
     );
   }
