@@ -127,8 +127,7 @@ class StoresScreen extends ConsumerWidget {
                           },
                           onDelete: () => openDialog(context, ref, store.id),
                           onViewBanners: () => context.push('/stores/banners/${store.id}?country=${storeState.selectedCountry}'),
-                          onViewProducts: () =>
-                              print('Ver productos de ${store.nombre}'),
+                          onViewProducts:() => context.push('/stores/products/${store.id}?country=${storeState.selectedCountry}')
                         );
                       },
                     );

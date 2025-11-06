@@ -204,7 +204,7 @@ class StoresDatasourceImpl extends StoresDatasource {
    try {
       final response = await dio.get('/store-product/$country/$storeId');
       final products = <ProductoStore>[];
-      for (final product in response.data['zdata']) {
+      for (final product in response.data['data']['zdata']) {
         products.add(ProductStoreMapper.jsonToEntity(product));
       }
       return products;
@@ -214,8 +214,9 @@ class StoresDatasourceImpl extends StoresDatasource {
         throw Exception('Error al obtener los paises');
       }
       throw Exception('Error al obtener los paises');
-    } catch (e) {
-      // print('Error no controlado: $e');
+    } catch (e, s) {
+      print('Error no controlado: $e');
+      print('Error no controlado: $s');
       throw Exception(e);
     }
   }

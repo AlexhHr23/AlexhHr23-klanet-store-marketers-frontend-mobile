@@ -25,28 +25,6 @@ class StoreBannersNotifier extends StateNotifier<StoreBannersState> {
     getProductsByStore(country, storeId);
   }
 
-
-  BannerStore newEmptyBanner() {
-    return BannerStore(
-      activo: '0', 
-      archivoImagen: '', 
-      archivoImagenMovil: '', 
-      duracion: 0, 
-      estado: '', 
-      fechaCreacion: DateTime.now(), 
-      fechaFin: DateTime.now(), 
-      fechaInicio: DateTime.now(), 
-      fechaModificacion: DateTime.now(), 
-      id: 0, 
-      idTienda: state.storeId, 
-      idUsuario: '', 
-      orden: 0, 
-      texto: '', 
-      url: ''
-    );
-  }
-
-
   //  Future<bool> createUpdateBanners(
   //   Map<String, dynamic> bannerLike,
   //   String country,

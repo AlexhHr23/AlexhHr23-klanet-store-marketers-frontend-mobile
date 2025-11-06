@@ -38,6 +38,13 @@ final goRouterProvider = Provider((ref) {
           country: state.uri.queryParameters['country'] ?? 'no-country'
         ),
       ),
+       GoRoute(
+        path: '/stores/products/:storeId',
+        builder: (context, state) => ProductsStoreScreen(
+          storeId: state.pathParameters['storeId'] ?? 'no-id',
+          country: state.uri.queryParameters['country'] ?? 'no-country'
+        ),
+      ),
       GoRoute(
         path: '/form-stores',
         builder: (context, state) => const CreateEditAddresScreen(),

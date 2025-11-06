@@ -16,8 +16,8 @@ class ProductoStore {
 class Producto {
     List<Foto> fotos;
     Padre padre;
-    int precioAntesImpuesto;
-    int precioDescuentoAntesImpuesto;
+    double precioAntesImpuesto;
+    double precioDescuentoAntesImpuesto;
     String activo;
     String atributos;
     int cantidadMinima;
@@ -41,13 +41,13 @@ class Producto {
     int idPadre;
     String idUsuario;
     String idVarianteShopify;
-    int impuesto;
+    double impuesto;
     String modelo;
     String moneda;
     double precioDescuento;
-    int precioEnvio;
+    double precioEnvio;
     double precioUnitario;
-    int rating;
+    double rating;
     String sku;
     String slug;
     String tags;
