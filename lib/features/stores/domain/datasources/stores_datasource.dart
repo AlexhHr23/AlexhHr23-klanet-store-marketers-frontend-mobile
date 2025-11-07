@@ -7,4 +7,5 @@ abstract class StoresDatasource {
   Future<BannerStore>createUpdateBanner(Map<String, dynamic> bannerLike, String country, String storeId);
   Future<List<BannerStore>> getBannersByStore(String country, int storeId);
   Future<List<ProductoStore>> getProductsByStore(String country, int storeId);
+  Future<String> deleteProductByStore(String country, int productId);
 }

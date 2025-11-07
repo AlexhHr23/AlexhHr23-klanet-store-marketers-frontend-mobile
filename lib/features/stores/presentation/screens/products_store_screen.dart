@@ -98,7 +98,7 @@ class _ProductsViewState extends ConsumerState<_ProductsView> {
         itemCount: productsState.products.length,
         itemBuilder: (context, index) {
           final product = productsState.products[index];
-          return ProductCard(product: product);
+          return ProductCard(product: product, country: widget.country);
         },
       ),
     );

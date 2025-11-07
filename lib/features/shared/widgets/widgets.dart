@@ -8,3 +8,4 @@ export 'custom_text_area.dart';
 export 'custom_form.dart';
 export 'custom_numeric_form_field.dart';
 export 'custom_awesome_alert.dart';
+export 'custom_snackbar.dart';

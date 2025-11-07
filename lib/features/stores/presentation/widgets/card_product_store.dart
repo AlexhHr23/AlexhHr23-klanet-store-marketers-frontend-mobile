@@ -1,18 +1,27 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
 import 'package:klanetmarketers/features/stores/domain/entities/entities.dart';
+import 'package:klanetmarketers/features/stores/presentation/providers/products_store_provider.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
+  final String country;
   final ProductoStore product;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, required this.country});
+
+  void showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(backgroundColor: Colors.green, content: Text('Producto eliminado correctamentes', style: TextStyle(color: Colors.white)),
+    ));
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = Theme.of(context).textTheme;
     return FadeInUp(
       animate: true,
@@ -38,14 +47,29 @@ class ProductCard extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () {
                           showCustomDialog(
-                          title: 'Eliminar producto',
-                          desc: '¿Desea eliminar el producto?', 
-                          type: DialogType.question, 
-                          context: context, 
-                          onOkPress: () => {
-                            
-                          },
-                        ).show();
+                            title: 'Eliminar producto',
+                            desc: '¿Desea eliminar el producto?',
+                            type: DialogType.question,
+                            context: context,
+                            onOkPress: () async {
+                              final success = await ref
+                                  .read(
+                                    productsStoreProvider((
+                                      country,
+                                      product.idTienda,
+                                    )).notifier,
+                                  )
+                                  .deleteProductByStore(
+                                    country,
+                                    product.id,
+                                  );
+
+                                  print('success: $success');
+                              if (success) {
+                                showSnackBar(context);
+                              }
+                            },
+                          ).show();
                         },
                         child: const CircleAvatar(
                           backgroundColor: Colors.white,

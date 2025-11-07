@@ -25,43 +25,33 @@ class StoreBannersNotifier extends StateNotifier<StoreBannersState> {
     getProductsByStore(country, storeId);
   }
 
-  //  Future<bool> createUpdateBanners(
-  //   Map<String, dynamic> bannerLike,
-  //   String country,
-  // ) async {
-  //   try {
-  //     final banner = await storesRepository.createUpdateBanner(
-  //       bannerLike,
-  //       country,
-  //       storeId.toString()
-  //     );
-  //     final isStoreList = state.banners.any((element) => element.id == banner.id);
-
-  //     if (!isStoreList) {
-  //       getBannerByStore(state.country, state.storeId);
-  //       return true;
-  //     }
-
-  //     state = state.copyWith(
-  //       banners: state.banners
-  //           .map((element) => (element.id == banner.id) ? banner : element)
-  //           .toList(),
-  //     );
-  //     return true;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
   Future<void> getProductsByStore(String country, int storeId ) async{
     state = state.copyWith(isLoading: true);
-
     try {
       final products = await storesRepository.getProductsByStore(state.country, state.storeId);
+
+      if(!mounted) return;
+
       state = state.copyWith(isLoading: false, products: products);
     }catch(e) {
       state = state.copyWith(isLoading: false);
       rethrow;
+    }
+  }
+  
+  Future<bool> deleteProductByStore(String country, int productId) async{
+    try {
+      final status = await storesRepository.deleteProductByStore(country, productId);
+     if(!mounted) return false;
+
+      if(status == 'success'){
+        final updatedList = state.products.where((p) => p.id != productId).toList();
+        state = state.copyWith(isLoading: false, products: updatedList);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 }

@@ -221,4 +221,18 @@ class StoresDatasourceImpl extends StoresDatasource {
     }
   }
   
+  @override
+  Future<String> deleteProductByStore(String country, int productId) async {
+    try {
+      final response = await dio.delete('/store-product/$country/$productId');
+      return response.data['status'];
+    } on DioException catch (error) {
+      print('error: $error');
+      return error.response!.data['status'];
+    } catch (error) {
+      print('error: $error');
+      return 'Error inesperado: $error';
+    }
+  }
+  
 }
