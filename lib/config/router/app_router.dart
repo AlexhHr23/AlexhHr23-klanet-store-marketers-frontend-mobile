@@ -69,6 +69,15 @@ final goRouterProvider = Provider((ref) {
             builder: (context, state) => CategoriesCountryScreen(
               country: state.pathParameters['country'] ?? 'no-country',
             ),
+            routes: [
+              GoRoute(
+                path: '/:categoryId',
+                builder: (context, state) => ProductsCategoryScreen(
+                  country: state.pathParameters['country'] ?? 'no-country',
+                  categoryId: (state.pathParameters['categoryId'] ?? 'no-id'),
+                ),
+              ),
+            ]
           ),
         ]
       ),

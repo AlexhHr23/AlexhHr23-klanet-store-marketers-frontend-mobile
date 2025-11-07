@@ -1,59 +1,66 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/features/products/domain/domain.dart';
 import 'package:klanetmarketers/features/products/presentation/providers/products_repository_provider.dart';
+import 'package:klanetmarketers/features/shared/domain/entities/entities.dart';
 
 final productsCategoryProvider = StateNotifierProvider.autoDispose
-    .family<CategoriesNotifier, CategoriestState, String>((ref, country) {
+    .family<ProductsCategoryNotifier, ProductsCategorytState, ({String country, int categoryId})>((ref, params) {
       final productsRepository = ref.watch(productsRepositoryProvider);
-      return CategoriesNotifier(
+      return ProductsCategoryNotifier(
         productsRepository: productsRepository,
-        country: country,
+        country: params.country,
+        categoryId: params.categoryId
       );
     });
 
-class CategoriesNotifier extends StateNotifier<CategoriestState> {
+class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
   final ProductsRepository productsRepository;
   final String country;
-  CategoriesNotifier({required this.productsRepository, required this.country})
-    : super(CategoriestState(country: country)) {
-    getCategoriesByCountry(country);
+  final int categoryId;
+  ProductsCategoryNotifier({required this.productsRepository, required this.country, required this.categoryId})
+    : super(ProductsCategorytState(country: country, categoryId: categoryId)) {
+    getProductsByCategory(country, categoryId);
   }
 
-  Future<void> getCategoriesByCountry(String country) async {
+  Future<void> getProductsByCategory(String country, int categoryId) async {
     state = state.copyWith(isLoading: true);
     try {
-      final categories = await productsRepository.getCategoriesByCountry(
-        country,
+      final products = await productsRepository.getProductsByCategory(
+        country, categoryId
       );
-      state = state.copyWith(categories: categories, isLoading: false);
+      state = state.copyWith(products: products, isLoading: false);
     } catch (e) {
       state = state.copyWith(errorMessage: e.toString(), isLoading: false);
     }
   }
 }
 
-class CategoriestState {
+class ProductsCategorytState {
   final String country;
+  final int categoryId;
   final bool isLoading;
-  final List<CategoryProduct> categories;
+  final List<Producto> products;
   final String errorMessage;
 
-  CategoriestState({
+  ProductsCategorytState({
     required this.country,
+    required this.categoryId,
     this.isLoading = false,
-    this.categories = const [],
+    this.products = const [],
     this.errorMessage = '',
   });
 
-  CategoriestState copyWith({
+  ProductsCategorytState copyWith({
     String? country,
+    int? categoryId,
     bool? isLoading,
-    List<CategoryProduct>? categories,
+    List<Producto>? products,
     String? errorMessage,
-  }) => CategoriestState(
+  }) => ProductsCategorytState(
     country: country ?? this.country,
+    categoryId: categoryId ?? this.categoryId,
     isLoading: isLoading ?? this.isLoading,
-    categories: categories ?? this.categories,
+    products: products ?? this.products,
     errorMessage: errorMessage ?? this.errorMessage,
   );
 }
