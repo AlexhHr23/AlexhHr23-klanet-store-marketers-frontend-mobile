@@ -49,12 +49,32 @@ class SideMenuState extends ConsumerState<SideMenu> {
           ),
         ),
 
-        ...appMenuItems.map(
-          (item) => NavigationDrawerDestination(
-            icon: Icon(item.icon),
-            label: Text(item.titleKey),
-          ),
-        ),
+        ...appMenuItems.map((item) {
+          if (item.children.isEmpty) {
+            return NavigationDrawerDestination(
+              icon: Icon(item.icon),
+              label: Text(item.titleKey),
+            );
+          } else {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: ExpansionTile(
+                leading: Icon(item.icon),
+                title: Text(item.titleKey),
+                children: item.children.map((child) {
+                  return ListTile(
+                    leading: Icon(child.icon, size: 20),
+                    title: Text(child.titleKey),
+                    onTap: () {
+                      context.push(child.link);
+                      widget.scaffoldKey.currentState?.closeDrawer();
+                    },
+                  );
+                }).toList(),
+              ),
+            );
+          }
+        }),
 
         const Padding(
           padding: EdgeInsets.fromLTRB(28, 16, 28, 10),

@@ -4,6 +4,7 @@ import 'package:klanetmarketers/config/router/app_router_notifier.dart';
 import '../../features/auth/presentation/presentation.dart';
 import '../../features/dashboard/presentation/presentation.dart';
 import '../../features/stores/presentation/presentation.dart';
+import '../../features/products/presentation/presentation.dart';
 
 final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
@@ -27,6 +28,7 @@ final goRouterProvider = Provider((ref) {
       //Private routes
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
 
+      //* Store Routes
       GoRoute(
         path: '/stores',
         builder: (context, state) => const StoresScreen(),
@@ -35,26 +37,40 @@ final goRouterProvider = Provider((ref) {
         path: '/stores/banners/:storeId',
         builder: (context, state) => BannersStoreScreen(
           storeId: state.pathParameters['storeId'] ?? 'no-id',
-          country: state.uri.queryParameters['country'] ?? 'no-country'
+          country: state.uri.queryParameters['country'] ?? 'no-country',
         ),
       ),
-       GoRoute(
+      GoRoute(
         path: '/stores/products/:storeId',
         builder: (context, state) => ProductsStoreScreen(
           storeId: state.pathParameters['storeId'] ?? 'no-id',
-          country: state.uri.queryParameters['country'] ?? 'no-country'
+          country: state.uri.queryParameters['country'] ?? 'no-country',
         ),
       ),
       GoRoute(
         path: '/form-stores',
         builder: (context, state) => const CreateEditAddresScreen(),
       ),
-       GoRoute(
+      GoRoute(
         path: '/form-banners/:storeId',
         builder: (context, state) => CreateEditBanner(
           storeId: state.pathParameters['storeId'] ?? 'no-id',
-          country: state.uri.queryParameters['country'] ?? 'no-country'
+          country: state.uri.queryParameters['country'] ?? 'no-country',
         ),
+      ),
+
+      //* Catalog Routes
+      GoRoute(
+        path: '/dashboard-job',
+        builder: (context, state) => const CountriesScreen(),
+        routes: [
+          GoRoute(
+            path: '/:country',
+            builder: (context, state) => CategoriesCountryScreen(
+              country: state.pathParameters['country'] ?? 'no-country',
+            ),
+          ),
+        ]
       ),
     ],
     redirect: (context, state) {

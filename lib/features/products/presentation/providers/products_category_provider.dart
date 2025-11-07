@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/features/products/domain/domain.dart';
 import 'package:klanetmarketers/features/products/presentation/providers/products_repository_provider.dart';
 
-final categoriesCountryProvider = StateNotifierProvider.autoDispose
+final productsCategoryProvider = StateNotifierProvider.autoDispose
     .family<CategoriesNotifier, CategoriestState, String>((ref, country) {
       final productsRepository = ref.watch(productsRepositoryProvider);
       return CategoriesNotifier(

@@ -7,7 +7,7 @@ class ProductsRepositoryImpl extends ProductsRepository{
 
   final ProductsDatasourcesImp datasource;
 
-  ProductsRepositoryImpl(this.datasource, {required String accessToken});
+  ProductsRepositoryImpl(this.datasource);
   @override
   Future<List<CategoryProduct>> getCategoriesByCountry(String country) {
     return datasource.getCategoriesByCountry(country) ;

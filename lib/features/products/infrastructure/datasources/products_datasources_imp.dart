@@ -24,7 +24,7 @@ class ProductsDatasourcesImp extends ProductsDatasource{
     try{
       final response = await dio.get('/products/categories/$country');
     final categories = <CategoryProduct>[]; 
-    for (final category in response.data['data']['zdata']) {
+    for (final category in response.data) {
       categories.add(CategoryProductMapper.jsonToEntity(category));
     }
     return categories;
