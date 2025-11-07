@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
+import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
 
 import '../../../shared/domain/entities/entities.dart';
 
@@ -13,8 +14,14 @@ class ProductCard extends ConsumerWidget {
   void showSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(backgroundColor: Colors.green, content: Text('Producto eliminado correctamentes', style: TextStyle(color: Colors.white)),
-    ));
+      const SnackBar(
+        backgroundColor: Colors.green,
+        content: Text(
+          'Producto eliminado correctamentes',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
   }
 
   @override
@@ -42,11 +49,15 @@ class ProductCard extends ConsumerWidget {
                       top: 8,
                       left: 10,
                       child: GestureDetector(
-                        onTap: () {
-                        },
-                        child: const CircleAvatar(
+                        onTap: () {},
+                        child: CircleAvatar(
                           backgroundColor: Colors.white,
-                          child: Icon(Icons.favorite, color: AppColors.danger),
+                          child: Icon(
+                            product.esFavorito == 1
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: AppColors.danger,
+                          ),
                         ),
                       ),
                     ),
@@ -54,9 +65,8 @@ class ProductCard extends ConsumerWidget {
                       top: 8,
                       right: 10,
                       child: GestureDetector(
-                        onTap: () {
-                        },
-                        child: Icon(Icons.more_vert, color: AppColors.astroGray),
+                        onTap: () {},
+                        child: Icon(Icons.share, color: AppColors.astroGray),
                       ),
                     ),
                   ],
@@ -85,6 +95,15 @@ class ProductCard extends ConsumerWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              SizedBox(
+                height: 20,
+                child: CustomFilledButton(
+                  text: 'Comprar',
+                  textStyle: textStyle.bodySmall?.copyWith(color: Colors.white),
+                  buttonColor: AppColors.primary,
+                  onPressed: () {},
                 ),
               ),
             ],
