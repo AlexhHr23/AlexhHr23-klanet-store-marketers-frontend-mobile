@@ -1,5 +1,3 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:klanetmarketers/config/constants/enviroment.dart';
 import 'package:klanetmarketers/features/products/domain/domain.dart';
@@ -7,12 +5,12 @@ import 'package:klanetmarketers/features/products/infrastructure/mappers/mappers
 import 'package:klanetmarketers/features/shared/domain/entities/product.dart';
 import 'package:klanetmarketers/features/shared/infrastructure/mappers/mappers.dart';
 
-class ProductsDatasourcesImp extends ProductsDatasource{
+class ProductsDatasourcesImp extends ProductsDatasource {
   final String accessToken;
   late final Dio dio;
 
   ProductsDatasourcesImp({required this.accessToken})
-     : dio = Dio(
+    : dio = Dio(
         BaseOptions(
           baseUrl: Environment.baseUrlMarket,
           headers: {
@@ -22,43 +20,44 @@ class ProductsDatasourcesImp extends ProductsDatasource{
         ),
       );
   @override
-  Future<List<CategoryProduct>> getCategoriesByCountry(String country) async{
-    try{
+  Future<List<CategoryProduct>> getCategoriesByCountry(String country) async {
+    try {
       final response = await dio.get('/products/categories/$country');
-    final categories = <CategoryProduct>[]; 
-    for (final category in response.data) {
-      categories.add(CategoryProductMapper.jsonToEntity(category));
-    }
-    return categories;
-    }on DioException catch(e){
+      final categories = <CategoryProduct>[];
+      for (final category in response.data) {
+        categories.add(CategoryProductMapper.jsonToEntity(category));
+      }
+      return categories;
+    } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
-      if(statusCode != null && statusCode >= 299 && statusCode <= 502){
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
         throw Exception('Error al obtener las categorias');
       }
       throw Exception('Error al obtener las categorias');
-    }catch(e){
+    } catch (e) {
       throw Exception(e);
     }
   }
 
   @override
-  Future<List<Producto>> getProductsByCategory(String country, int categoryId) async {
-      try{
-      final response = await dio.get('/products/$country?categoria=$categoryId');
-    final products = <Producto>[]; 
-    for (final product in response.data['zdata']) {
-      products.add(ProductoMapper.jsonToEntity(product));
-    }
-    return products;
-    }on DioException catch(e){
+  Future<ListProducts> getProductsByCategory(
+    String country,
+    int categoryId,
+  ) async {
+    try {
+      final response = await dio.get(
+        '/products/$country?categoria=$categoryId',
+      );
+      final products = ListProductMapper.jsonToEntity(response.data);
+      return products;
+    } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
-      if(statusCode != null && statusCode >= 299 && statusCode <= 502){
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
         throw Exception('Error al obtener las categorias');
       }
       throw Exception('Error al obtener las categorias');
-    }catch(e){
+    } catch (e) {
       throw Exception(e);
     }
   }
-
 }

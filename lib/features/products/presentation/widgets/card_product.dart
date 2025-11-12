@@ -2,14 +2,17 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
+import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../shared/domain/entities/entities.dart';
 
 class ProductCard extends ConsumerWidget {
   final Producto product;
+  final String link;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, required this.link});
 
   void showSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -27,6 +30,7 @@ class ProductCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = Theme.of(context).textTheme;
+    final authState = ref.watch(authProvider);
     return FadeInUp(
       animate: true,
       child: SizedBox(
@@ -65,8 +69,67 @@ class ProductCard extends ConsumerWidget {
                       top: 8,
                       right: 10,
                       child: GestureDetector(
-                        onTap: () {},
-                        child: Icon(Icons.share, color: AppColors.astroGray),
+                        onTap: () {
+                          showMenu(
+                            context: context,
+                            position: const RelativeRect.fromLTRB(
+                              1000,
+                              80,
+                              10,
+                              0,
+                            ),
+                            items: [
+                              PopupMenuItem(
+                                value: 'share',
+                                child: Row(
+                                  children: const [
+                                    Icon(
+                                      Icons.send,
+                                      color: AppColors.primary,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text('Obtener enlace'),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'copy',
+                                child: Row(
+                                  children: const [
+                                    Icon(
+                                      Icons.link,
+                                      color: AppColors.primary,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text('Enlace compra rapida'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ).then((value) async {
+                            if (value == 'share') {
+                              final params = ShareParams(
+                                uri: Uri.parse(
+                                  '$link/products/${product.padre.id}/${product.slug}?code=${authState.user?.profile.sellerCode}&moneda=${product.moneda}&product=${product.id}',
+                                ),
+                              );
+                              await SharePlus.instance.share(params);
+                            } else if (value == 'copy') {
+                              final params = ShareParams(
+                                uri: Uri.parse(
+                                  '$link/checkout-fast?${product.id}',
+                                ),
+                              );
+                              await SharePlus.instance.share(params);
+                            }
+                          });
+                        },
+                        child: const Icon(
+                          Icons.share,
+                          color: AppColors.astroGray,
+                        ),
                       ),
                     ),
                   ],

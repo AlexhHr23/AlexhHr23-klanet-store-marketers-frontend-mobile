@@ -4,12 +4,16 @@ import 'package:klanetmarketers/features/products/presentation/providers/product
 import 'package:klanetmarketers/features/shared/domain/entities/entities.dart';
 
 final productsCategoryProvider = StateNotifierProvider.autoDispose
-    .family<ProductsCategoryNotifier, ProductsCategorytState, ({String country, int categoryId})>((ref, params) {
+    .family<
+      ProductsCategoryNotifier,
+      ProductsCategorytState,
+      ({String country, int categoryId})
+    >((ref, params) {
       final productsRepository = ref.watch(productsRepositoryProvider);
       return ProductsCategoryNotifier(
         productsRepository: productsRepository,
         country: params.country,
-        categoryId: params.categoryId
+        categoryId: params.categoryId,
       );
     });
 
@@ -17,8 +21,11 @@ class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
   final ProductsRepository productsRepository;
   final String country;
   final int categoryId;
-  ProductsCategoryNotifier({required this.productsRepository, required this.country, required this.categoryId})
-    : super(ProductsCategorytState(country: country, categoryId: categoryId)) {
+  ProductsCategoryNotifier({
+    required this.productsRepository,
+    required this.country,
+    required this.categoryId,
+  }) : super(ProductsCategorytState(country: country, categoryId: categoryId)) {
     getProductsByCategory(country, categoryId);
   }
 
@@ -26,9 +33,11 @@ class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
     state = state.copyWith(isLoading: true);
     try {
       final products = await productsRepository.getProductsByCategory(
-        country, categoryId
+        country,
+        categoryId,
       );
-      state = state.copyWith(products: products, isLoading: false);
+      state = state.copyWith(link: products.link);
+      state = state.copyWith(products: products.products, isLoading: false);
     } catch (e) {
       state = state.copyWith(errorMessage: e.toString(), isLoading: false);
     }
@@ -39,6 +48,7 @@ class ProductsCategorytState {
   final String country;
   final int categoryId;
   final bool isLoading;
+  final String link;
   final List<Producto> products;
   final String errorMessage;
 
@@ -46,6 +56,7 @@ class ProductsCategorytState {
     required this.country,
     required this.categoryId,
     this.isLoading = false,
+    this.link = '',
     this.products = const [],
     this.errorMessage = '',
   });
@@ -54,12 +65,14 @@ class ProductsCategorytState {
     String? country,
     int? categoryId,
     bool? isLoading,
+    String? link,
     List<Producto>? products,
     String? errorMessage,
   }) => ProductsCategorytState(
     country: country ?? this.country,
     categoryId: categoryId ?? this.categoryId,
     isLoading: isLoading ?? this.isLoading,
+    link: link ?? this.link,
     products: products ?? this.products,
     errorMessage: errorMessage ?? this.errorMessage,
   );
