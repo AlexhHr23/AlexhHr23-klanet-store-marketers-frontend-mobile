@@ -67,7 +67,7 @@ class _CategoriesView extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: MasonryGridView.count(
         physics: const BouncingScrollPhysics(),
-        crossAxisCount: 2,
+        crossAxisCount: 1,
         mainAxisSpacing: 10,
         crossAxisSpacing: 5,
         itemCount: productsState.products.length,

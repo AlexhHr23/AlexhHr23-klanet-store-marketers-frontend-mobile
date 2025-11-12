@@ -7,7 +7,8 @@ class ProductoMapper {
     ),
     padre: PadreMapper.jsonToEntity(json["Padre"]),
     precioAntesImpuesto: json["PrecioAntesImpuesto"]?.toDouble() ?? 0.0,
-    precioDescuentoAntesImpuesto: json["PrecioDescuentoAntesImpuesto"]?.toDouble() ?? 0.0,
+    precioDescuentoAntesImpuesto:
+        json["PrecioDescuentoAntesImpuesto"]?.toDouble() ?? 0.0,
     activo: json["activo"] ?? '',
     atributos: json["atributos"] ?? '',
     cantidadMinima: json["cantidad_minima"] ?? 0,
@@ -67,6 +68,7 @@ class PadreMapper {
     categoria: CategoryMapper.jsonToEntity(json["Categoria"]),
     empresa: EmpresaMapper.jsonToEntity(json["Empresa"]),
     marca: MarcaMapper.jsonToEntity(json["Marca"]),
+    tipo: TipoMapper.jsonToEntity(json["Tipo"]),
     activo: json["activo"] ?? '',
     descripcion: json["descripcion"] ?? '',
     destacado: json["destacado"] ?? '',
@@ -137,7 +139,19 @@ class EmpresaMapper {
     idUsuario: json["id_usuario"] ?? '',
     ligaFacturacion: json["liga_facturacion"] ?? '',
     logo: json["logo"] ?? '',
-    nombre:json["nombre"] ?? '',
+    nombre: json["nombre"] ?? '',
     nombreCorto: json["nombre_corto"] ?? '',
+  );
+}
+
+class TipoMapper {
+  static Tipo jsonToEntity(Map<String, dynamic> json) => Tipo(
+    activo: json["activo"] ?? '',
+    esFisico: json["es_fisico"] ?? '',
+    fechaCreacion: json["fecha_creacion"] != null
+        ? DateTime.parse(json["fecha_creacion"])
+        : DateTime.now(),
+    id: json["id"] ?? 0,
+    nombre: json["nombre"] ?? '',
   );
 }
