@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-void showSnackBar(
+void customShowSnackBar(
   BuildContext context, {
   required String message,
-  Color backgroundColor = Colors.green,
+  required bool res,
   IconData icon = Icons.check_circle,
   Duration duration = const Duration(seconds: 3),
 }) {
@@ -18,11 +18,11 @@ void showSnackBar(
     content: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: res ? Colors.green : Colors.red,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: backgroundColor.withOpacity(0.4),
+            color: res ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

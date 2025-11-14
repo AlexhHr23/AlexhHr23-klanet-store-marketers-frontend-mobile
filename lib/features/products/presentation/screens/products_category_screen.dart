@@ -74,7 +74,7 @@ class _CategoriesView extends ConsumerWidget {
         itemBuilder: (context, index) {
           final product = productsState.products[index];
           return GestureDetector(
-            child: ProductCard(product: product, link: productsState.link),
+            child: ProductCard(product: product, link: productsState.link, country: country, categoryId: categoryId),
           );
         },
       ),
