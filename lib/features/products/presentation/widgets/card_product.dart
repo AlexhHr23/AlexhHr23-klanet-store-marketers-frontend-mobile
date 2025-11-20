@@ -15,17 +15,20 @@ class ProductCard extends ConsumerWidget {
   final String country;
   final int categoryId;
 
-  const ProductCard({super.key, required this.product, required this.link, required this.country, required this.categoryId});
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.link,
+    required this.country,
+    required this.categoryId,
+  });
 
   void showSnackBarProdct(BuildContext context, String message, bool response) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: response ? Colors.green : Colors.red,
-        content: Text(
-          message,
-          style: TextStyle(color: Colors.white),
-        ),
+        content: Text(message, style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -101,10 +104,26 @@ class _ImageSection extends ConsumerWidget {
           top: 12,
           left: 12,
           child: GestureDetector(
-            onTap:product.esFavorito == 0 ? () async{
-              final res = await ref.read(productsCategoryProvider((country: country, categoryId: categoryId,)).notifier).addProductToFavorite(product.id);
-              customShowSnackBar(context, message: res ? 'Producto agregado a favoritos' : 'Hubo un error al agregar', res: res);
-            } : null,
+            onTap: product.esFavorito == 0
+                ? () async {
+                    final res = await ref
+                        .read(
+                          productsCategoryProvider((
+                            country: country,
+                            categoryId: categoryId,
+                          )).notifier,
+                        )
+                        .addProductToFavorite(product.id);
+                    if (!context.mounted) return;
+                    customShowSnackBar(
+                      context,
+                      message: res
+                          ? 'Producto agregado a favoritos'
+                          : 'Hubo un error al agregar',
+                      res: res,
+                    );
+                  }
+                : null,
             child: CircleAvatar(
               radius: 14,
               backgroundColor: Colors.white,

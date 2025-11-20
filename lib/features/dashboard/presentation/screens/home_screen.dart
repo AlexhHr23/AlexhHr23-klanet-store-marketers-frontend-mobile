@@ -8,7 +8,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../providers/providers.dart';
 
 class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -19,7 +21,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scaffoldKey = GlobalKey<ScaffoldState>();
     ref.listen(authProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty) {
         showSnackbar(context, next.errorMessage);

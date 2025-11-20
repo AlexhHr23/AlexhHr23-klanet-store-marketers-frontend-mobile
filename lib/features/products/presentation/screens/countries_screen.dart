@@ -6,7 +6,9 @@ import 'package:klanetmarketers/features/shared/layout/app_layout.dart';
 import 'package:klanetmarketers/features/shared/providers/providers.dart';
 
 class CountriesScreen extends ConsumerWidget {
-  const CountriesScreen({super.key});
+  CountriesScreen({super.key});
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,6 +18,7 @@ class CountriesScreen extends ConsumerWidget {
     final countries = countriesState.countries;
 
     return AppLayout(
+      scaffoldKey: scaffoldKey,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -30,12 +33,10 @@ class CountriesScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(
               'Selecciona el país de tu interés. La opción seleccionada se aplicará al listado de categorías.',
-              style: textStyle.bodySmall?.copyWith(
-                fontWeight: FontWeight.w300,
-              ),
+              style: textStyle.bodySmall?.copyWith(fontWeight: FontWeight.w300),
             ),
             const SizedBox(height: 24),
-        
+
             Expanded(
               child: ListView.builder(
                 itemCount: countries.length,
@@ -72,11 +73,7 @@ class _CardCountry extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
         ],
       ),
       padding: const EdgeInsets.all(16),
@@ -90,11 +87,8 @@ class _CardCountry extends StatelessWidget {
               width: 50,
               height: 35,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.flag_outlined,
-                size: 40,
-                color: Colors.grey,
-              ),
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.flag_outlined, size: 40, color: Colors.grey),
             ),
           ),
           const SizedBox(width: 16),

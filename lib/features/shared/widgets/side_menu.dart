@@ -15,11 +15,49 @@ class SideMenu extends ConsumerStatefulWidget {
 }
 
 class SideMenuState extends ConsumerState<SideMenu> {
-  int navDrawerIndex = 0;
-  // final countryState = ref.
+  int navDrawerIndex = 0; // índice del item padre seleccionado
+  int selectedChildIndex = -1;
+
+  // Devuelve (parentIndex, childIndex)
+  Map<String, int> _findParentAndChild(String location) {
+    for (int i = 0; i < appMenuItems.length; i++) {
+      final parent = appMenuItems[i];
+
+      // Coincidencia exacta con el padre
+      if (location == parent.link) return {'p': i, 'c': -1};
+
+      // Recorremos hijos para ver si alguno coincide
+      for (int j = 0; j < parent.children.length; j++) {
+        final child = parent.children[j];
+
+        // Coincidencia exacta o ruta que empieza con child.link (soporta /dashboard-job/23)
+        if (location == child.link || location.startsWith(child.link)) {
+          return {'p': i, 'c': j}; // devolvemos padre e indice del hijo
+        }
+      }
+
+      // Si el padre tiene children pero la ruta contiene el fragmento del child (caso raro)
+      for (int j = 0; j < parent.children.length; j++) {
+        final child = parent.children[j];
+        if (location.contains(child.link)) {
+          return {'p': i, 'c': j};
+        }
+      }
+    }
+
+    // Si no coincide nada, default a dashboard (índice 0)
+    return {'p': 0, 'c': -1};
+  }
 
   @override
   Widget build(BuildContext context) {
+    final currentLocation = GoRouterState.of(context).uri.toString();
+
+    // Calculamos parent/child activos antes de construir
+    final sel = _findParentAndChild(currentLocation);
+    navDrawerIndex = sel['p']!;
+    selectedChildIndex = sel['c']!;
+
     final hasNotch = MediaQuery.of(context).viewPadding.top > 35;
     final textStyles = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider);
@@ -28,12 +66,24 @@ class SideMenuState extends ConsumerState<SideMenu> {
       elevation: 1,
       selectedIndex: navDrawerIndex,
       onDestinationSelected: (value) {
-        setState(() {
-          navDrawerIndex = value;
-          final menuItem = appMenuItems[value];
-          context.push(menuItem.link);
+        final selectedItem = appMenuItems[value];
+
+        // Si el item tiene hijos no navegamos al padre (ya que "/catalog" no existe).
+        // Aquí asumimos que los items sin hijos sí tienen ruta navegable.
+        if (selectedItem.children.isEmpty) {
+          setState(() {
+            navDrawerIndex = value;
+            selectedChildIndex = -1;
+          });
+          context.go(selectedItem.link);
           widget.scaffoldKey.currentState?.closeDrawer();
-        });
+        } else {
+          // Si el padre tiene hijos, simplemente expandimos/cerramos (no navegamos)
+          setState(() {
+            navDrawerIndex = value;
+            selectedChildIndex = -1;
+          });
+        }
       },
       children: [
         Padding(
@@ -49,31 +99,53 @@ class SideMenuState extends ConsumerState<SideMenu> {
           ),
         ),
 
-        ...appMenuItems.map((item) {
+        // Construimos el menú con índices
+        ...List.generate(appMenuItems.length, (i) {
+          final item = appMenuItems[i];
+
+          // Si no tiene hijos, lo dejamos como NavigationDrawerDestination
           if (item.children.isEmpty) {
             return NavigationDrawerDestination(
               icon: Icon(item.icon),
               label: Text(item.titleKey),
             );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: ExpansionTile(
-                leading: Icon(item.icon),
-                title: Text(item.titleKey),
-                children: item.children.map((child) {
-                  return ListTile(
-                    leading: Icon(child.icon, size: 20),
-                    title: Text(child.titleKey),
-                    onTap: () {
-                      context.push(child.link);
-                      widget.scaffoldKey.currentState?.closeDrawer();
-                    },
-                  );
-                }).toList(),
-              ),
-            );
           }
+
+          // Si tiene hijos, mostramos un ExpansionTile
+          final bool parentActive = navDrawerIndex == i;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ExpansionTile(
+              leading: Icon(item.icon),
+              title: Text(item.titleKey),
+              initiallyExpanded: parentActive,
+              // Opcional: controla visualmente la cabecera si está activo
+              children: List.generate(item.children.length, (j) {
+                final child = item.children[j];
+                final bool childActive =
+                    parentActive && selectedChildIndex == j;
+
+                return ListTile(
+                  leading: Icon(child.icon, size: 20),
+                  title: Text(child.titleKey),
+                  selected: childActive,
+                  // Puedes personalizar el color cuando está seleccionado
+                  // tileColor: childActive ? Colors.grey.withOpacity(0.12) : null,
+                  onTap: () {
+                    // Al seleccionar hijo, actualizamos índices y navegamos
+                    setState(() {
+                      navDrawerIndex = i; // padre
+                      selectedChildIndex = j; // hijo
+                    });
+
+                    context.go(child.link);
+                    widget.scaffoldKey.currentState?.closeDrawer();
+                  },
+                );
+              }),
+            ),
+          );
         }),
 
         const Padding(

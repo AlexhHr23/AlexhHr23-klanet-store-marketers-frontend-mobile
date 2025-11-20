@@ -26,13 +26,10 @@ final goRouterProvider = Provider((ref) {
       ),
 
       //Private routes
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(path: '/', builder: (context, state) => HomeScreen()),
 
       //* Store Routes
-      GoRoute(
-        path: '/stores',
-        builder: (context, state) => const StoresScreen(),
-      ),
+      GoRoute(path: '/stores', builder: (context, state) => StoresScreen()),
       GoRoute(
         path: '/stores/banners/:storeId',
         builder: (context, state) => BannersStoreScreen(
@@ -62,7 +59,7 @@ final goRouterProvider = Provider((ref) {
       //* Catalog Routes
       GoRoute(
         path: '/dashboard-job',
-        builder: (context, state) => const CountriesScreen(),
+        builder: (context, state) => CountriesScreen(),
         routes: [
           GoRoute(
             path: '/:country',
@@ -77,9 +74,9 @@ final goRouterProvider = Provider((ref) {
                   categoryId: (state.pathParameters['categoryId'] ?? 'no-id'),
                 ),
               ),
-            ]
+            ],
           ),
-        ]
+        ],
       ),
     ],
     redirect: (context, state) {

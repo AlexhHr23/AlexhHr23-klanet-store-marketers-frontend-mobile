@@ -11,20 +11,20 @@ import '../providers/providers.dart';
 // import '../providers/providers.dart';
 
 class AppLayout extends ConsumerWidget {
-  final GlobalKey<ScaffoldState>? scaffoldKey;
+  final GlobalKey<ScaffoldState> scaffoldKey;
   final Widget body;
   final List<CustomFloatingButton>? floatingActionButton;
 
   const AppLayout({
     super.key,
-    this.scaffoldKey,
+    required this.scaffoldKey,
     required this.body,
     this.floatingActionButton,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final key = scaffoldKey ?? GlobalKey<ScaffoldState>();
+    final key = scaffoldKey;
     ref.watch(countryProvider);
     ref.watch(currencyProvider);
     return Scaffold(

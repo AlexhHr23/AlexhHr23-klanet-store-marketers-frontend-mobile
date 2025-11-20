@@ -10,7 +10,9 @@ import 'package:klanetmarketers/features/stores/presentation/widgets/widgets.dar
 import '../../../shared/widgets/widgets.dart'; // si usas colores personalizados
 
 class StoresScreen extends ConsumerWidget {
-  const StoresScreen({super.key});
+  StoresScreen({super.key});
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   void openDialog(BuildContext context, WidgetRef ref, int storeId) {
     showDialog(
@@ -37,8 +39,6 @@ class StoresScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scaffoldKey = GlobalKey<ScaffoldState>();
-
     final countriesState = ref.watch(countryProvider);
     final countries = countriesState.countries;
     final storeState = ref.watch(storeProvider);
@@ -123,11 +123,15 @@ class StoresScreen extends ConsumerWidget {
                           store: store,
                           onEdit: () => {
                             storeNotifier.selectStore(store, store.id),
-                            context.push('/form-stores')
+                            context.push('/form-stores'),
                           },
                           onDelete: () => openDialog(context, ref, store.id),
-                          onViewBanners: () => context.push('/stores/banners/${store.id}?country=${storeState.selectedCountry}'),
-                          onViewProducts:() => context.push('/stores/products/${store.id}?country=${storeState.selectedCountry}')
+                          onViewBanners: () => context.push(
+                            '/stores/banners/${store.id}?country=${storeState.selectedCountry}',
+                          ),
+                          onViewProducts: () => context.push(
+                            '/stores/products/${store.id}?country=${storeState.selectedCountry}',
+                          ),
                         );
                       },
                     );
@@ -167,7 +171,7 @@ class StoresScreen extends ConsumerWidget {
             iconData: Icons.add,
             color: AppColors.primary,
             onPressed: () {
-              storeNotifier.selectStore(null,0);
+              storeNotifier.selectStore(null, 0);
               context.push('/form-stores');
             },
           ),
