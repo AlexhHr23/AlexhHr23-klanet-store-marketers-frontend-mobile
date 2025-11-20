@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:klanetmarketers/features/products/presentation/providers/products_category_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -11,16 +12,18 @@ import '../../../shared/domain/entities/entities.dart';
 class ProductCard extends ConsumerWidget {
   final Producto product;
   final String link;
+  final String country;
+  final int categoryId;
 
-  const ProductCard({super.key, required this.product, required this.link});
+  const ProductCard({super.key, required this.product, required this.link, required this.country, required this.categoryId});
 
-  void showSnackBar(BuildContext context) {
+  void showSnackBarProdct(BuildContext context, String message, bool response) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        backgroundColor: Colors.green,
+      SnackBar(
+        backgroundColor: response ? Colors.green : Colors.red,
         content: Text(
-          'Producto eliminado correctamente',
+          message,
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -46,6 +49,8 @@ class ProductCard extends ConsumerWidget {
                   product: product,
                   link: link,
                   authState: authState,
+                  country: country,
+                  categoryId: categoryId,
                 ),
               ),
 
@@ -65,11 +70,15 @@ class ProductCard extends ConsumerWidget {
 class _ImageSection extends ConsumerWidget {
   final Producto product;
   final String link;
+  final String country;
+  final int categoryId;
   final AuthState authState;
 
   const _ImageSection({
     required this.product,
     required this.link,
+    required this.country,
+    required this.categoryId,
     required this.authState,
   });
 
@@ -87,11 +96,15 @@ class _ImageSection extends ConsumerWidget {
         ),
 
         // Botón de favorito (esquina superior izquierda)
+        // product.esFavorito == 1 ? Container() :
         Positioned(
           top: 12,
           left: 12,
           child: GestureDetector(
-            onTap: () {},
+            onTap:product.esFavorito == 0 ? () async{
+              final res = await ref.read(productsCategoryProvider((country: country, categoryId: categoryId,)).notifier).addProductToFavorite(product.id);
+              customShowSnackBar(context, message: res ? 'Producto agregado a favoritos' : 'Hubo un error al agregar', res: res);
+            } : null,
             child: CircleAvatar(
               radius: 14,
               backgroundColor: Colors.white,

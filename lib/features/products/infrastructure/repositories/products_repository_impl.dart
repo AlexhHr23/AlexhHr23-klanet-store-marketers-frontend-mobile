@@ -14,4 +14,9 @@ class ProductsRepositoryImpl extends ProductsRepository {
   Future<ListProducts> getProductsByCategory(String country, int categoryId) {
     return datasource.getProductsByCategory(country, categoryId);
   }
+  
+  @override
+  Future<String> addProductToFavorite(String country, int productId) {
+    return datasource.addProductToFavorite(country, productId);
+  }
 }

@@ -42,6 +42,27 @@ class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
       state = state.copyWith(errorMessage: e.toString(), isLoading: false);
     }
   }
+
+  Future<bool> addProductToFavorite(int productId) async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final status = await productsRepository.addProductToFavorite(
+        state.country,
+        productId
+      );
+
+      if(status == 'success') {
+        state = state.copyWith(isLoading: false);
+        getProductsByCategory(country, categoryId);
+        return true;
+      } else {
+        state = state.copyWith(isLoading: false);
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 class ProductsCategorytState {
