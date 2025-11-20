@@ -31,7 +31,6 @@ class ProductCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider);
-
     return FadeInUp(
       animate: true,
       child: Card(

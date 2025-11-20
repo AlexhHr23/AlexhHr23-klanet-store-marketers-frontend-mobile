@@ -69,13 +69,13 @@ class StoreNotifier extends StateNotifier<StoreState> {
 
   Future<void> deleteStore(int storeId) async {
     final selectCoutry = state.selectedCountry;
-    if(selectCoutry == null) return ;
+    if (selectCoutry == null) return;
     state.copyWith(isLoading: true);
-    try  {
+    try {
       await storesRepository.deleteStore(selectCoutry, storeId);
-       state.copyWith(isLoading: false);
-       await getStores();
-    }catch(e) {
+      state.copyWith(isLoading: false);
+      await getStores();
+    } catch (e) {
       state.copyWith(isLoading: false);
       rethrow;
     }
@@ -101,7 +101,7 @@ class StoreNotifier extends StateNotifier<StoreState> {
 }
 
 class StoreState {
-   final String errorMessage;
+  final String errorMessage;
   final String? selectedCountry;
   final String? selectCurrecy;
   final List<MarketerStore> stores;
