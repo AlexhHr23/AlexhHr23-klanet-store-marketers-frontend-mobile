@@ -8,8 +8,8 @@ import 'package:klanetmarketers/features/auth/presentation/providers/auth_provid
 import 'package:klanetmarketers/features/products/presentation/providers/products_category_provider.dart';
 import 'package:klanetmarketers/features/shared/providers/currency_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
+import 'package:klanetmarketers/features/stores/domain/entities/entities.dart';
 import 'package:klanetmarketers/features/stores/presentation/providers/get_stores_provider.dart';
-import 'package:klanetmarketers/features/stores/presentation/providers/store_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../shared/domain/entities/entities.dart';
@@ -32,6 +32,7 @@ class ProductCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider);
+    final storesState = ref.watch(getStoreProvider(country)).stores;
     return FadeInUp(
       animate: true,
       child: Card(
@@ -59,6 +60,8 @@ class ProductCard extends ConsumerWidget {
                   product: product,
                   textStyle: textStyle,
                   country: country,
+                  storesState: storesState,
+                  productId: product.id,
                 ),
               ),
             ],
@@ -229,6 +232,7 @@ class _ImageSection extends ConsumerWidget {
                           .deleteProductFromFavorite(product.id);
 
                       if (res) {
+                        if (!context.mounted) return;
                         customShowSnackBar(
                           context,
                           message: res
@@ -309,18 +313,21 @@ class _ContentSection extends ConsumerWidget {
   final Producto product;
   final TextTheme textStyle;
   final String country;
+  final List<MarketerStore> storesState;
+  final int productId;
 
   const _ContentSection({
     required this.product,
     required this.textStyle,
     required this.country,
+    required this.storesState,
+    required this.productId,
   });
 
   void _showStoreSelection(BuildContext context, WidgetRef ref) {
-    final storesState = ref.watch(getStoreProvider(country)).stores;
-
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) => Container(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -333,14 +340,26 @@ class _ContentSection extends ConsumerWidget {
             const SizedBox(height: 16),
             ...storesState.map(
               (store) => ListTile(
-                leading: const Icon(
-                  Icons.currency_exchange,
-                  color: AppColors.primary,
-                ),
+                leading: const Icon(Icons.store, color: AppColors.primary),
                 title: Text(store.nombre),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  // _shareLink(context, currency.code.toString(), isFastBuy);
+                  final res = await ref
+                      .read(
+                        productsCategoryProvider((
+                          country: country,
+                          categoryId: productId,
+                        )).notifier,
+                      )
+                      .addProductToStore(product.id, store.id);
+                  if (!context.mounted) return;
+                  customShowSnackBar(
+                    context,
+                    message: res
+                        ? 'Producto agregado a la tienda'
+                        : 'Ya existe el producto en la tienda',
+                    res: res,
+                  );
                 },
               ),
             ),

@@ -35,4 +35,23 @@ List<MenuItem> appMenuItems = <MenuItem>[
       // MenuItem(titleKey: 'Marcas', link: '/brands', icon: Icons.label_outline),
     ],
   ), //MenuItem(titleKey: 'Catalogo', link: '/stores', icon: Icons.store_outlined),
+
+   MenuItem(
+    titleKey: 'Comisiones',
+    link: '/commissions',
+    icon: Icons.account_balance_outlined,
+    children: [
+      MenuItem(
+        titleKey: 'Directas y de red',
+        link: '/commissions-all',
+        icon: Icons.shopping_bag_outlined,
+      ),
+      // MenuItem(
+      //   titleKey: 'Categorías',
+      //   link: '/categories',
+      //   icon: Icons.list_alt_outlined,
+      // ),
+      // MenuItem(titleKey: 'Marcas', link: '/brands', icon: Icons.label_outline),
+    ],
+  ), //
 ];

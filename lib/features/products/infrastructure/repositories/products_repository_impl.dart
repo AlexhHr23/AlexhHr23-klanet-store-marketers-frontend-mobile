@@ -24,4 +24,9 @@ class ProductsRepositoryImpl extends ProductsRepository {
   Future<String> deleteProductFromFavorite(String country, int productId) {
     return datasource.deleteProductFromFavorite(country, productId);
   }
+  
+  @override
+  Future<String> addProductToStore(String country, int productId, int storeId) {
+   return datasource.addProductToStore(country, productId, storeId);
+  }
 }
