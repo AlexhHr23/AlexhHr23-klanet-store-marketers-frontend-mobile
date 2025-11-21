@@ -1,10 +1,15 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
 import 'package:klanetmarketers/features/products/presentation/providers/products_category_provider.dart';
+import 'package:klanetmarketers/features/shared/providers/currency_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
+import 'package:klanetmarketers/features/stores/presentation/providers/get_stores_provider.dart';
+import 'package:klanetmarketers/features/stores/presentation/providers/store_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../shared/domain/entities/entities.dart';
@@ -22,16 +27,6 @@ class ProductCard extends ConsumerWidget {
     required this.country,
     required this.categoryId,
   });
-
-  void showSnackBarProdct(BuildContext context, String message, bool response) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: response ? Colors.green : Colors.red,
-        content: Text(message, style: TextStyle(color: Colors.white)),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +55,11 @@ class ProductCard extends ConsumerWidget {
               // Contenido a la derecha
               Expanded(
                 flex: 3,
-                child: _ContentSection(product: product, textStyle: textStyle),
+                child: _ContentSection(
+                  product: product,
+                  textStyle: textStyle,
+                  country: country,
+                ),
               ),
             ],
           ),
@@ -85,6 +84,98 @@ class _ImageSection extends ConsumerWidget {
     required this.authState,
   });
 
+  void openDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Borrar de favoritos'),
+        content: const Text('¿Estas seguro de borrar de favoritos?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ref
+                  .read(
+                    productsCategoryProvider((
+                      country: country,
+                      categoryId: categoryId,
+                    )).notifier,
+                  )
+                  .deleteProductFromFavorite(product.id);
+              context.pop();
+            },
+            child: const Text('Aceptar'),
+          ),
+          TextButton(
+            onPressed: () => context.pop(),
+            child: const Text('Cancelar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCurrencySelection(
+    BuildContext context,
+    WidgetRef ref,
+    bool isFastBuy,
+  ) {
+    final currenciesState = ref.watch(currencyProvider).currencies;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              isFastBuy
+                  ? 'Selecciona moneda para compra rápida'
+                  : 'Selecciona moneda para enlace',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...currenciesState.map(
+              (currency) => ListTile(
+                leading: const Icon(
+                  Icons.currency_exchange,
+                  color: AppColors.primary,
+                ),
+                title: Text(currency.name),
+                onTap: () {
+                  Navigator.pop(context);
+                  _shareLink(context, currency.code.toString(), isFastBuy);
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _shareLink(
+    BuildContext context,
+    String currencyId,
+    bool isFastBuy,
+  ) async {
+    final shareUri = isFastBuy
+        ? Uri.parse(
+            '$link/checkout-fast?${product.padre.tipo?.esFisico == '1' ? 'type=products' : 'type=digitals'}&product=${product.id}&code=${authState.user?.profile.sellerCode}&moneda=$currencyId',
+          )
+        : Uri.parse(
+            '$link/products/${product.padre.id}/${product.slug}?code=${authState.user?.profile.sellerCode}&moneda=$currencyId&product=${product.id}',
+          );
+
+    final params = ShareParams(uri: shareUri);
+    await SharePlus.instance.share(params);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Stack(
@@ -99,7 +190,6 @@ class _ImageSection extends ConsumerWidget {
         ),
 
         // Botón de favorito (esquina superior izquierda)
-        // product.esFavorito == 1 ? Container() :
         Positioned(
           top: 12,
           left: 12,
@@ -123,7 +213,32 @@ class _ImageSection extends ConsumerWidget {
                       res: res,
                     );
                   }
-                : null,
+                : () => showCustomDialog(
+                    title: 'Eliminar producto',
+                    desc: '¿Desea eliminar el producto de favoritos?',
+                    type: DialogType.question,
+                    context: context,
+                    onOkPress: () async {
+                      final res = await ref
+                          .read(
+                            productsCategoryProvider((
+                              country: country,
+                              categoryId: categoryId,
+                            )).notifier,
+                          )
+                          .deleteProductFromFavorite(product.id);
+
+                      if (res) {
+                        customShowSnackBar(
+                          context,
+                          message: res
+                              ? 'Producto eliminado de favoritos'
+                              : 'Hubo un error al eliminar',
+                          res: res,
+                        );
+                      }
+                    },
+                  ).show(),
             child: CircleAvatar(
               radius: 14,
               backgroundColor: Colors.white,
@@ -167,21 +282,11 @@ class _ImageSection extends ConsumerWidget {
                 ),
               ),
             ],
-            onSelected: (value) async {
+            onSelected: (value) {
               if (value == 'share') {
-                final params = ShareParams(
-                  uri: Uri.parse(
-                    '$link/products/${product.padre.id}/${product.slug}?code=${authState.user?.profile.sellerCode}&moneda=${product.moneda}&product=${product.id}',
-                  ),
-                );
-                await SharePlus.instance.share(params);
+                _showCurrencySelection(context, ref, false);
               } else if (value == 'copy') {
-                final params = ShareParams(
-                  uri: Uri.parse(
-                    '$link/checkout-fast?${product.padre.tipo?.esFisico == '1' ? 'type=products' : 'type=digitals'}&product=${product.id}&code=${authState.user?.profile.sellerCode}&moneda=${product.moneda}',
-                  ),
-                );
-                await SharePlus.instance.share(params);
+                _showCurrencySelection(context, ref, true);
               }
             },
             child: CircleAvatar(
@@ -200,18 +305,62 @@ class _ImageSection extends ConsumerWidget {
   }
 }
 
-class _ContentSection extends StatelessWidget {
+class _ContentSection extends ConsumerWidget {
   final Producto product;
   final TextTheme textStyle;
+  final String country;
 
-  const _ContentSection({required this.product, required this.textStyle});
+  const _ContentSection({
+    required this.product,
+    required this.textStyle,
+    required this.country,
+  });
+
+  void _showStoreSelection(BuildContext context, WidgetRef ref) {
+    final storesState = ref.watch(getStoreProvider(country)).stores;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Selecciona tienda',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...storesState.map(
+              (store) => ListTile(
+                leading: const Icon(
+                  Icons.currency_exchange,
+                  color: AppColors.primary,
+                ),
+                title: Text(store.nombre),
+                onTap: () {
+                  Navigator.pop(context);
+                  // _shareLink(context, currency.code.toString(), isFastBuy);
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Nombre del producto
           Text(
@@ -221,52 +370,56 @@ class _ContentSection extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 8),
-          Text(
-            'Marca: ${product.padre.marca.nombre}',
-            style: textStyle.bodySmall?.copyWith(fontWeight: FontWeight.w500),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(height: 8),
-          // Precio
-          Text(
-            '\$${product.precioDescuento.toStringAsFixed(2)} ${product.moneda}',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-
-          const SizedBox(height: 8),
           Row(
             children: [
-              SizedBox(
-                height: 25,
-                child: CustomFilledButton(
-                  text: 'Tienda',
-                  textStyle: textStyle.bodySmall?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                  buttonColor: AppColors.primary,
-                  onPressed: () {},
+              Text(
+                'Marca: ${product.padre.marca.nombre}',
+                style: textStyle.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 10,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(width: 4),
-              SizedBox(
-                height: 25,
-                child: CustomFilledButton(
-                  text: 'Paquete',
-                  textStyle: textStyle.bodySmall?.copyWith(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                  buttonColor: AppColors.primary,
-                  onPressed: () {},
+              SizedBox(width: 8),
+              // Precio
+              Text(
+                '\$${product.precioDescuento.toStringAsFixed(2)} ${product.moneda}',
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 25,
+            child: CustomFilledButton(
+              text: 'Agregar a tienda',
+              textStyle: textStyle.bodySmall?.copyWith(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+              buttonColor: AppColors.primary,
+              onPressed: () {
+                _showStoreSelection(context, ref);
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 25,
+            child: CustomFilledButton(
+              text: 'Agreagar a paquete',
+              textStyle: textStyle.bodySmall?.copyWith(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+              buttonColor: AppColors.primary,
+              onPressed: () {},
+            ),
           ),
         ],
       ),

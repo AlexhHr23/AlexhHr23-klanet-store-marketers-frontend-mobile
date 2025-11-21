@@ -98,6 +98,26 @@ class StoreNotifier extends StateNotifier<StoreState> {
       rethrow;
     }
   }
+
+  Future<void> getStoresByCountry(String country) async {
+    state = state.copyWith(isLoading: true, stores: []);
+    try {
+      final stores = await storesRepository.getStores(country);
+
+      if (!mounted) return;
+
+      state = state.copyWith(
+        stores: stores,
+        isLoading: false,
+        hasSearched: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      state = state.copyWith(isLoading: false);
+      rethrow;
+    }
+  }
 }
 
 class StoreState {

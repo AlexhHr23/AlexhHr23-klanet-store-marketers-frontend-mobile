@@ -18,6 +18,6 @@ AwesomeDialog showCustomDialog({
     btnCancelOnPress: () {},
     titleTextStyle: const TextStyle(color: Colors.black, fontSize: 18),
     btnOkText: 'Si',
-    btnCancelText: 'No'
+    btnCancelText: 'No',
   );
 }

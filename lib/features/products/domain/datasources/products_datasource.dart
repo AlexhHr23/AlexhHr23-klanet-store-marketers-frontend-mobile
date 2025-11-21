@@ -4,4 +4,5 @@ abstract class ProductsDatasource {
   Future<List<CategoryProduct>> getCategoriesByCountry(String country);
   Future<ListProducts> getProductsByCategory(String country, int categoryId);
   Future<String> addProductToFavorite(String country, int productId);
+  Future<String> deleteProductFromFavorite(String country, int productId);
 }

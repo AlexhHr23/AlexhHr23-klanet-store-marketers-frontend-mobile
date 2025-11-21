@@ -63,6 +63,26 @@ class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
       return false;
     }
   }
+
+  Future<bool> deleteProductFromFavorite(int productId) async {
+    try {
+      // state = state.copyWith(isLoading: true);
+      final status = await productsRepository.deleteProductFromFavorite(
+        state.country,
+        productId,
+      );
+
+      if (status == 'success') {
+        getProductsByCategory(country, categoryId);
+        return true;
+      } else {
+        // state = state.copyWith(isLoading: false);
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 class ProductsCategorytState {

@@ -64,9 +64,31 @@ class ProductsDatasourcesImp extends ProductsDatasource {
     try {
       final response = await dio.post(
         '/marketer-prod-fav/$country',
-        data: {'producto_id': productId, 'activo': '1'},
+        data: {'id_producto': productId, 'activo': '1'},
       );
       print('response: $response');
+      return response.data['status'];
+    } on DioException catch (e) {
+      print('error: $e');
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        return e.response!.data['status'];
+      }
+      return 'error';
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  @override
+  Future<String> deleteProductFromFavorite(
+    String country,
+    int productId,
+  ) async {
+    try {
+      final response = await dio.delete(
+        '/marketer-prod-fav/$country/$productId',
+      );
       return response.data['status'];
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
