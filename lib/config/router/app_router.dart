@@ -78,6 +78,13 @@ final goRouterProvider = Provider((ref) {
           ),
         ],
       ),
+
+      // GoRoute(
+      //   path: '/packages',
+      //   builder: (context, state) => (
+      //     productId: state.pathParameters['productId'] ?? 'no-id',
+      //   ),
+      // ),
     ],
     redirect: (context, state) {
       final authStatus = goRouterNotifier.authStatus;

@@ -27,6 +27,11 @@ List<MenuItem> appMenuItems = <MenuItem>[
         link: '/dashboard-job',
         icon: Icons.shopping_bag_outlined,
       ),
+      MenuItem(
+        titleKey: 'Paquetes',
+        link: '/packages',
+        icon: Icons.shopping_bag_outlined,
+      ),
       // MenuItem(
       //   titleKey: 'Categorías',
       //   link: '/categories',
