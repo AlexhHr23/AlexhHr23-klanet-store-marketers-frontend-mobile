@@ -392,7 +392,7 @@ class _ContentSection extends ConsumerWidget {
           Row(
             children: [
               Text(
-                'Marca: ${product.padre.marca.nombre}',
+                'Marca: ${product.padre.marca?.nombre}',
                 style: textStyle.bodySmall?.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 10,

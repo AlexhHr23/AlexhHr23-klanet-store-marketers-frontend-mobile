@@ -15,12 +15,14 @@ class ProductoMapper {
     clave: json["clave"] ?? '',
     codigobarras: json["codigobarras"] ?? '',
     comisionPorcentaje: json["comision_porcentaje"]?.toDouble() ?? 0.0,
-    costoEnvio: json["costo_envio"] ?? 0.0,
+    costoEnvio: json["costo_envio"]?.toDouble() ?? 0.0,
     descripcionLarga: json["descripcion_larga"] ?? '',
     diasEntrega: json["dias_entrega"] ?? 0,
     envioIncluido: json["envio_incluido"] ?? '',
     envioSolitario: json["envio_solitario"] ?? '',
-    esFavorito: json["es_favorito"] ?? '',
+    esFavorito: json["es_favorito"] is int
+        ? json["es_favorito"]
+        : int.tryParse(json["es_favorito"] ?? '0') ?? 0,
     esInventariable: json["es_inventariable"] ?? '',
     existencia: json["existencia"] ?? 0,
     fechaBaja: DateTime.parse(json["fecha_baja"]),
@@ -65,22 +67,31 @@ class PhotoMapper {
 
 class PadreMapper {
   static Padre jsonToEntity(Map<String, dynamic> json) => Padre(
-    categoria: CategoryMapper.jsonToEntity(json["Categoria"]),
-    empresa: EmpresaMapper.jsonToEntity(json["Empresa"]),
-    marca: MarcaMapper.jsonToEntity(json["Marca"]),
-    tipo: TipoMapper.jsonToEntity(json["Tipo"]),
+    categoria: json["Categoria"] != null
+        ? CategoryMapper.jsonToEntity(json["Categoria"])
+        : null,
+    empresa: json["Empresa"] != null
+        ? EmpresaMapper.jsonToEntity(json["Empresa"])
+        : null,
+    marca: json["Marca"] != null
+        ? MarcaMapper.jsonToEntity(json["Marca"])
+        : null,
+    tipo: json["Tipo"] != null ? TipoMapper.jsonToEntity(json["Tipo"]) : null,
+
     activo: json["activo"] ?? '',
     descripcion: json["descripcion"] ?? '',
     destacado: json["destacado"] ?? '',
     envioInternacional: json["envio_internacional"] ?? '',
-    fechaCreacion: DateTime.parse(json["fecha_creacion"]),
-    fechaModificacion: DateTime.parse(json["fecha_modificacion"]),
+    fechaCreacion:
+        DateTime.tryParse(json["fecha_creacion"] ?? '') ?? DateTime.now(),
+    fechaModificacion:
+        DateTime.tryParse(json["fecha_modificacion"] ?? '') ?? DateTime.now(),
     id: json["id"] ?? 0,
     idCategoria: json["id_categoria"] ?? 0,
     idEmpresa: json["id_empresa"] ?? 0,
     idMarca: json["id_marca"] ?? 0,
     idTipo: json["id_tipo"] ?? 0,
-    idUsuario: json["id_usuario"] ?? 0,
+    idUsuario: json["id_usuario"]?.toString() ?? '',
     mostrarEnPortada: json["mostrar_en_portada"] ?? '',
     nombre: json["nombre"] ?? '',
     paisesEnvio: json["paises_envio"] ?? '',

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/router/app_router_notifier.dart';
+import 'package:klanetmarketers/features/packages/presentation/screens/screens.dart';
 import '../../features/auth/presentation/presentation.dart';
 import '../../features/dashboard/presentation/presentation.dart';
 import '../../features/stores/presentation/presentation.dart';
@@ -78,13 +79,11 @@ final goRouterProvider = Provider((ref) {
           ),
         ],
       ),
-
-      // GoRoute(
-      //   path: '/packages',
-      //   builder: (context, state) => (
-      //     productId: state.pathParameters['productId'] ?? 'no-id',
-      //   ),
-      // ),
+      GoRoute(path: '/packages', builder: (context, state) => PackagesScreen()),
+      GoRoute(
+        path: '/form-packages',
+        builder: (context, state) => const CreatePackageScreen(),
+      ),
     ],
     redirect: (context, state) {
       final authStatus = goRouterNotifier.authStatus;

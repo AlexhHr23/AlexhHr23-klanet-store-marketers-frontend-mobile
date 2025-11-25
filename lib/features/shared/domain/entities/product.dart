@@ -9,12 +9,12 @@ class Producto {
   String clave;
   String codigobarras;
   double comisionPorcentaje;
-  int costoEnvio;
+  double costoEnvio;
   String descripcionLarga;
   int diasEntrega;
   String envioIncluido;
   String envioSolitario;
-  int esFavorito;
+  int? esFavorito;
   String esInventariable;
   int existencia;
   DateTime fechaBaja;
@@ -56,7 +56,7 @@ class Producto {
     required this.diasEntrega,
     required this.envioIncluido,
     required this.envioSolitario,
-    required this.esFavorito,
+    this.esFavorito,
     required this.esInventariable,
     required this.existencia,
     required this.fechaBaja,
@@ -111,9 +111,9 @@ class Foto {
 }
 
 class Padre {
-  Categoria categoria;
-  Empresa empresa;
-  Marca marca;
+  Categoria? categoria;
+  Empresa? empresa;
+  Marca? marca;
   Tipo? tipo;
   String activo;
   String descripcion;
@@ -135,9 +135,9 @@ class Padre {
   String variantes;
 
   Padre({
-    required this.categoria,
-    required this.empresa,
-    required this.marca,
+    this.categoria,
+    this.empresa,
+    this.marca,
     this.tipo,
     required this.activo,
     required this.descripcion,

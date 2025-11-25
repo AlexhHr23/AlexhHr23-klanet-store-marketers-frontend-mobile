@@ -41,7 +41,7 @@ List<MenuItem> appMenuItems = <MenuItem>[
     ],
   ), //MenuItem(titleKey: 'Catalogo', link: '/stores', icon: Icons.store_outlined),
 
-   MenuItem(
+  MenuItem(
     titleKey: 'Comisiones',
     link: '/commissions',
     icon: Icons.account_balance_outlined,
