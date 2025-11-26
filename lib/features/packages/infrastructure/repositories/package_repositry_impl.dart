@@ -5,6 +5,15 @@ class PackageRepositoryImpl extends PackagesRepository {
   final PackageDatasourceImpl datasource;
 
   PackageRepositoryImpl(this.datasource);
+
+  @override
+  Future<Package> createPackage(
+    String country,
+    Map<String, dynamic> packageLike,
+  ) {
+    return datasource.createPackage(country, packageLike);
+  }
+
   @override
   Future<List<Package>> getPackages(String country) {
     return datasource.getPackages(country);
@@ -13,5 +22,19 @@ class PackageRepositoryImpl extends PackagesRepository {
   @override
   Future<String> deletePackage(String country, int packageId) {
     return datasource.deletePackage(country, packageId);
+  }
+
+  @override
+  Future<Package> getPackageById(String country, int packageId) {
+    return datasource.getPackageById(country, packageId);
+  }
+
+  @override
+  Future<String> deleteProductFromPackage(
+    String country,
+    int packageId,
+    int productId,
+  ) {
+    return datasource.deleteProductFromPackage(country, packageId, productId);
   }
 }

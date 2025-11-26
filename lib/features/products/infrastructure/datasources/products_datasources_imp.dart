@@ -100,10 +100,14 @@ class ProductsDatasourcesImp extends ProductsDatasource {
       throw Exception(e);
     }
   }
-  
+
   @override
-  Future<String> addProductToStore(String country, int productId, int storeId) async{
-     try {
+  Future<String> addProductToStore(
+    String country,
+    int productId,
+    int storeId,
+  ) async {
+    try {
       final response = await dio.post(
         '/store-product/$country',
         data: {'id_producto': productId, 'id_tienda': storeId},
@@ -117,6 +121,28 @@ class ProductsDatasourcesImp extends ProductsDatasource {
       return 'error';
     } catch (e) {
       throw Exception(e);
-    } 
+    }
+  }
+
+  @override
+  Future<String> addProductToPackage(
+    String country,
+    int productId,
+    int packageId,
+  ) async {
+    try {
+      final response = await dio.put(
+        '/marketers-paquetes/$packageId/$productId?pais=$country',
+      );
+      return response.data['status'];
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        return e.response!.data['status'];
+      }
+      return 'error';
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }

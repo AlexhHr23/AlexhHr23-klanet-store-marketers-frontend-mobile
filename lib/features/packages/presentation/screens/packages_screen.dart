@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/packages/presentation/providers/package_provider.dart';
 import 'package:klanetmarketers/features/packages/presentation/widgets/widgets.dart';
-import 'package:klanetmarketers/features/shared/widgets/custom_floating_action_button.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
 import '../../../shared/layout/app_layout.dart';
 import '../../../shared/providers/providers.dart';
@@ -123,6 +122,11 @@ class PackagesScreen extends ConsumerWidget {
                               },
                             ).show();
                           },
+                          onViewProducts: () {
+                            context.push(
+                              '/packages/${package.id}?country=${package.pais}',
+                            );
+                          },
                         );
                       },
                     );
@@ -164,8 +168,7 @@ class PackagesScreen extends ConsumerWidget {
             iconData: Icons.add,
             color: AppColors.primary,
             onPressed: () {
-              // storeNotifier.selectStore(null, 0);
-              // context.push('/form-stores');
+              context.push('/form-packages/${packageState.selectedCountry}');
             },
           ),
       ],

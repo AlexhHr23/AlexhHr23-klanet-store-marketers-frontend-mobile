@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/auth/presentation/providers/auth_provider.dart';
+import 'package:klanetmarketers/features/packages/domain/domain.dart';
+import 'package:klanetmarketers/features/packages/presentation/providers/get_packages_provider.dart';
 import 'package:klanetmarketers/features/products/presentation/providers/products_category_provider.dart';
 import 'package:klanetmarketers/features/shared/providers/currency_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
@@ -33,6 +35,8 @@ class ProductCard extends ConsumerWidget {
     final textStyle = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider);
     final storesState = ref.watch(getStoreProvider(country)).stores;
+    final packagesState = ref.watch(getPackagesProvider(country));
+
     return FadeInUp(
       animate: true,
       child: Card(
@@ -61,6 +65,9 @@ class ProductCard extends ConsumerWidget {
                   textStyle: textStyle,
                   country: country,
                   storesState: storesState,
+                  packageState: product.padre.tipo?.esFisico == '1'
+                      ? packagesState.physicalPackages
+                      : packagesState.digitalPackages,
                   productId: product.id,
                 ),
               ),
@@ -314,6 +321,7 @@ class _ContentSection extends ConsumerWidget {
   final TextTheme textStyle;
   final String country;
   final List<MarketerStore> storesState;
+  final List<Package> packageState;
   final int productId;
 
   const _ContentSection({
@@ -321,6 +329,7 @@ class _ContentSection extends ConsumerWidget {
     required this.textStyle,
     required this.country,
     required this.storesState,
+    required this.packageState,
     required this.productId,
   });
 
@@ -358,6 +367,56 @@ class _ContentSection extends ConsumerWidget {
                     message: res
                         ? 'Producto agregado a la tienda'
                         : 'Ya existe el producto en la tienda',
+                    res: res,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showPackageSelection(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Selecciona paquete',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...packageState.map(
+              (package) => ListTile(
+                leading: const Icon(Icons.store, color: AppColors.primary),
+                title: Text(package.nombre),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final res = await ref
+                      .read(
+                        productsCategoryProvider((
+                          country: country,
+                          categoryId: productId,
+                        )).notifier,
+                      )
+                      .addProductToPackage(product.id, package.id);
+                  if (!context.mounted) return;
+                  customShowSnackBar(
+                    context,
+                    message: res
+                        ? 'Producto agregado al paquete'
+                        : 'Ya existe el producto en el paquete',
                     res: res,
                   );
                 },
@@ -437,7 +496,9 @@ class _ContentSection extends ConsumerWidget {
                 fontSize: 12,
               ),
               buttonColor: AppColors.primary,
-              onPressed: () {},
+              onPressed: () {
+                _showPackageSelection(context, ref);
+              },
             ),
           ),
         ],

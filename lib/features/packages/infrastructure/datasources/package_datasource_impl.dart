@@ -17,6 +17,29 @@ class PackageDatasourceImpl extends PackageDatasource {
           },
         ),
       );
+
+  @override
+  Future<Package> createPackage(
+    String country,
+    Map<String, dynamic> packageLike,
+  ) async {
+    try {
+      final response = await dio.post(
+        '/marketers-paquetes?pais=$country',
+        data: packageLike,
+      );
+      return PackageMapper.jsonToEntity(response.data['data']);
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        throw Exception('Error al crear paquete');
+      }
+      throw Exception('Error al crear paquete');
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   @override
   Future<List<Package>> getPackages(String country) async {
     try {
@@ -47,6 +70,42 @@ class PackageDatasourceImpl extends PackageDatasource {
     try {
       final response = await dio.delete(
         '/marketers-paquetes/$packageId?pais=$country',
+      );
+      return response.data['status'];
+    } on DioException catch (error) {
+      return error.response!.data['status'];
+    } catch (error) {
+      return 'Error inesperado: $error';
+    }
+  }
+
+  @override
+  Future<Package> getPackageById(String country, int packageId) async {
+    try {
+      final response = await dio.get(
+        '/marketers-paquetes/$packageId?pais=$country',
+      );
+      return PackageMapper.jsonToEntity(response.data['zdata']);
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if (statusCode != null && statusCode >= 299 && statusCode <= 502) {
+        throw Exception('Error al obtener el paquete');
+      }
+      throw Exception('Error al obtener el paquete');
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  @override
+  Future<String> deleteProductFromPackage(
+    String country,
+    int packageId,
+    int productId,
+  ) async {
+    try {
+      final response = await dio.delete(
+        '/marketers-paquetes/$packageId/$productId?pais=$country',
       );
       return response.data['status'];
     } on DioException catch (error) {

@@ -12,7 +12,9 @@ final storeFormProvider = StateNotifierProvider.autoDispose
           .watch(storeProvider.notifier)
           .createUpdateStore;
       final userId = ref.watch(authProvider).user?.uid ?? '';
-      final countryCode = ref.watch(storeProvider).selectedCountry ?? ref.watch(countryProvider).countries.first.id;
+      final countryCode =
+          ref.watch(storeProvider).selectedCountry ??
+          ref.watch(countryProvider).countries.first.id;
       return StoreFormNotifier(
         onSubmitCallback: createUpdateCallback,
         store: store,
@@ -22,7 +24,10 @@ final storeFormProvider = StateNotifierProvider.autoDispose
     });
 
 class StoreFormNotifier extends StateNotifier<StoreFormState> {
-  final Future<bool> Function(Map<String, dynamic> storeLikem, String countryCode)?
+  final Future<bool> Function(
+    Map<String, dynamic> storeLikem,
+    String countryCode,
+  )?
   onSubmitCallback;
   final String userid = '';
   final String countryCode = '';
@@ -60,10 +65,10 @@ class StoreFormNotifier extends StateNotifier<StoreFormState> {
     };
 
     try {
-      print(storeLike);
+      // print(storeLike);
       return await onSubmitCallback!(storeLike, state.country);
     } catch (e) {
-      print('error: $e');
+      // print('error: $e');
       return false;
     }
   }
@@ -126,7 +131,7 @@ class StoreFormState {
   });
 
   StoreFormState copyWith({
-    bool? isLoading, 
+    bool? isLoading,
     bool? isFormValid,
     int? id,
     TextFormInput? name,

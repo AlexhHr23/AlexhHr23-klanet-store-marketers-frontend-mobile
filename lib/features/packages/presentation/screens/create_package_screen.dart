@@ -2,20 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
-import 'package:klanetmarketers/features/shared/providers/currency_provider.dart';
+import 'package:klanetmarketers/features/packages/presentation/providers/package_form_provider.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
-import 'package:klanetmarketers/features/stores/presentation/providers/store_form_provider.dart';
-import 'package:klanetmarketers/features/stores/presentation/providers/store_provider.dart';
 
 class CreatePackageScreen extends ConsumerWidget {
-  // final int addressId;
-  // final String userId;
+  final String country;
 
-  const CreatePackageScreen({
-    super.key,
-    // required this.addressId,
-    // required this.userId,
-  });
+  const CreatePackageScreen({super.key, required this.country});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,31 +20,24 @@ class CreatePackageScreen extends ConsumerWidget {
           style: textStyle.titleSmall?.copyWith(color: AppColors.secondary),
         ),
       ),
-      body: _PackageForm(),
+      body: _PackageForm(country: country),
     );
   }
 }
 
 class _PackageForm extends ConsumerWidget {
-  // void showSnackBar(BuildContext context) {
-  //   ScaffoldMessenger.of(context).clearSnackBars();
-  //   ScaffoldMessenger.of(
-  //     context,
-  //   ).showSnackBar(const SnackBar(content: Text('Producto actualizado')));
-  // }
+  final String country;
+
+  _PackageForm({required this.country});
+
+  final types = [
+    {'value': '1', 'text': 'Fisico'},
+    {'value': '0', 'text': 'Digital'},
+  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyState = ref.watch(currencyProvider);
-    final storeState = ref.watch(storeProvider);
-
-    if (storeState.selectedStore == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final storeFormState = ref.watch(
-      storeFormProvider(storeState.selectedStore!),
-    );
+    final packageFormState = ref.watch(packageFormProvider(country));
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -62,10 +48,10 @@ class _PackageForm extends ConsumerWidget {
           CustomTextFormField(
             label: 'Nombre',
             hint: 'Nombre de paquete',
-            initialValue: storeFormState.name.value,
-            errorMessage: storeFormState.name.errorMessage,
+            initialValue: packageFormState.name.value,
+            errorMessage: packageFormState.name.errorMessage,
             onChanged: (value) => ref
-                .read(storeFormProvider(storeState.selectedStore!).notifier)
+                .read(packageFormProvider(country).notifier)
                 .onNameChanged(value),
           ),
           const SizedBox(height: 20),
@@ -84,23 +70,20 @@ class _PackageForm extends ConsumerWidget {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 isExpanded: true,
-                value: storeFormState.currency,
-                items: currencyState.currencies.map((country) {
+                value: packageFormState.type,
+                items: types.map((type) {
                   return DropdownMenuItem<String>(
-                    value: country.code,
+                    value: type['value'],
                     child: Text(
-                      country.name,
+                      type['text']!,
                       style: const TextStyle(fontSize: 16),
                     ),
                   );
                 }).toList(),
                 onChanged: (value) {
-                  print('value: $value');
                   ref
-                      .read(
-                        storeFormProvider(storeState.selectedStore!).notifier,
-                      )
-                      .onSelectCurrencyChanged(value!);
+                      .read(packageFormProvider(country).notifier)
+                      .onSelectTypeChanged(value!);
                 },
               ),
             ),
@@ -112,14 +95,36 @@ class _PackageForm extends ConsumerWidget {
             child: CustomFilledButton(
               text: 'Guardar',
               onPressed: () {
-                // ref
-                //     .read(storeFormProvider(storeState.selectedStore!).notifier)
-                //     .onFormSubmit()
-                //     .then((value) {
-                //       if (!value) return;
-                //       showSnackBar(context);
-                //       context.push('/stores');
-                //     });
+                ref
+                    .read(packageFormProvider(country).notifier)
+                    .onFormSubmit()
+                    .then((value) {
+                      if (value == 'success') {
+                        if (!context.mounted) return;
+                        customShowSnackBar(
+                          context,
+                          message: 'Paquete creado correctamente',
+                          res: true,
+                        );
+                        ref.read(packageFormProvider(country).notifier).reset();
+                        context.push('/packages');
+                      } else if (value == 'form') {
+                        if (!context.mounted) return;
+                        customShowSnackBar(
+                          context,
+                          message: 'Todos los campos son obligatorios',
+                          res: false,
+                        );
+                        return;
+                      } else if (value == 'error') {
+                        if (!context.mounted) return;
+                        customShowSnackBar(
+                          context,
+                          message: 'Error al crear paquete',
+                          res: false,
+                        );
+                      }
+                    });
               },
             ),
           ),

@@ -16,6 +16,23 @@ class PackageNotifier extends StateNotifier<PackageState> {
     state = state.copyWith(selectedCountry: country);
   }
 
+  Future<bool> createPackage(
+    String country,
+    Map<String, dynamic> packageLike,
+  ) async {
+    try {
+      final package = await packageRepository.createPackage(
+        country,
+        packageLike,
+      );
+      final updatedList = [...state.packages, package];
+      state = state.copyWith(isLoading: false, packages: updatedList);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> getPackages(String country) async {
     state = state.copyWith(isLoading: true);
     try {

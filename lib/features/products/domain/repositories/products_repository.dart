@@ -6,4 +6,9 @@ abstract class ProductsRepository {
   Future<String> addProductToFavorite(String country, int productId);
   Future<String> deleteProductFromFavorite(String country, int productId);
   Future<String> addProductToStore(String country, int productId, int storeId);
+  Future<String> addProductToPackage(
+    String country,
+    int productId,
+    int packageId,
+  );
 }

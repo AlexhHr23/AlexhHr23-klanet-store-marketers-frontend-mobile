@@ -3,15 +3,15 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
+import 'package:klanetmarketers/features/packages/domain/domain.dart';
+import 'package:klanetmarketers/features/packages/presentation/presentation.dart';
 import 'package:klanetmarketers/features/shared/widgets/widgets.dart';
-import 'package:klanetmarketers/features/stores/domain/entities/entities.dart';
-import 'package:klanetmarketers/features/stores/presentation/providers/products_store_provider.dart';
 
-class ProductStoreCard extends ConsumerWidget {
+class CardProductPackage extends ConsumerWidget {
   final String country;
-  final ProductoStore product;
+  final ProductPackage product;
 
-  const ProductStoreCard({
+  const CardProductPackage({
     super.key,
     required this.product,
     required this.country,
@@ -64,14 +64,12 @@ class ProductStoreCard extends ConsumerWidget {
                             onOkPress: () async {
                               final success = await ref
                                   .read(
-                                    productsStoreProvider((
+                                    getPackageProvider((
                                       country,
-                                      product.idTienda,
+                                      product.idPaqueteMarketer,
                                     )).notifier,
                                   )
-                                  .deleteProductByStore(country, product.id);
-
-                              print('success: $success');
+                                  .deleteProductByPackage(product.idProducto);
                               if (success) {
                                 showSnackBar(context);
                               }

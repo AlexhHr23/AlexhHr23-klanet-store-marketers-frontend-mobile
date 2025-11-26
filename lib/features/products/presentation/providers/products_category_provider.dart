@@ -36,11 +36,11 @@ class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
         country,
         categoryId,
       );
-       if(!mounted) return;
+      if (!mounted) return;
       state = state.copyWith(link: products.link);
       state = state.copyWith(products: products.products, isLoading: false);
     } catch (e) {
-      if(!mounted) return;
+      if (!mounted) return;
       state = state.copyWith(errorMessage: e.toString(), isLoading: false);
     }
   }
@@ -92,6 +92,24 @@ class ProductsCategoryNotifier extends StateNotifier<ProductsCategorytState> {
         state.country,
         productId,
         storeId,
+      );
+
+      if (status == 'success') {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> addProductToPackage(int productId, int packageId) async {
+    try {
+      final status = await productsRepository.addProductToPackage(
+        state.country,
+        productId,
+        packageId,
       );
 
       if (status == 'success') {

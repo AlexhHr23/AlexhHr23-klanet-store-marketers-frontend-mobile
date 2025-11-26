@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/config/utils/app_colors.dart';
 import 'package:klanetmarketers/features/packages/domain/domain.dart';
+import 'package:klanetmarketers/features/shared/providers/currency_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
-class CardPackage extends StatelessWidget {
+class CardPackage extends ConsumerWidget {
   final Package package;
   final VoidCallback? onDelete;
   final VoidCallback? onAddProducts;
@@ -16,8 +19,52 @@ class CardPackage extends StatelessWidget {
     this.onViewProducts,
   });
 
+  void _showCurrencySelection(BuildContext context, WidgetRef ref) {
+    final currenciesState = ref.watch(currencyProvider).currencies;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 16),
+            ...currenciesState.map(
+              (currency) => ListTile(
+                leading: const Icon(
+                  Icons.currency_exchange,
+                  color: AppColors.primary,
+                ),
+                title: Text(currency.name),
+                onTap: () {
+                  Navigator.pop(context);
+                  _shareLink(context, currency.code.toString());
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _shareLink(BuildContext context, String currencyId) async {
+    final shareUri = Uri.parse(
+      // '$link/products/${product.padre.id}/${product.slug}?code=${authState.user?.profile.sellerCode}&moneda=$currencyId&product=${product.id}',
+      '',
+    );
+    final params = ShareParams(uri: shareUri);
+    await SharePlus.instance.share(params);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       color: Colors.white,
       elevation: 3,
@@ -50,8 +97,7 @@ class CardPackage extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.share, color: Colors.grey),
                   onPressed: () {
-                    // final link = 'https://tusitio.com/stores/${store.slug}';
-                    // Share.share('Visita la tienda ${store.nombre}: $link');
+                    _showCurrencySelection(context, ref);
                   },
                 ),
               ],

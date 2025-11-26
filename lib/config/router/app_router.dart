@@ -79,10 +79,24 @@ final goRouterProvider = Provider((ref) {
           ),
         ],
       ),
-      GoRoute(path: '/packages', builder: (context, state) => PackagesScreen()),
       GoRoute(
-        path: '/form-packages',
-        builder: (context, state) => const CreatePackageScreen(),
+        path: '/packages',
+        builder: (context, state) => PackagesScreen(),
+        routes: [
+          GoRoute(
+            path: '/:packageId',
+            builder: (context, state) => PackageByIdScreen(
+              packageId: state.pathParameters['packageId'] ?? 'no-id',
+              country: state.uri.queryParameters['country'] ?? 'no-country',
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/form-packages/:country',
+        builder: (context, state) => CreatePackageScreen(
+          country: state.pathParameters['country'] ?? 'no-country',
+        ),
       ),
     ],
     redirect: (context, state) {
