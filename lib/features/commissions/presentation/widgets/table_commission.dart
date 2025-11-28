@@ -13,7 +13,7 @@ class TableCommission extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
-          minHeight: 100, // Altura fija para evitar el error
+          minHeight: 100,
         ),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal, // Scroll horizontal
@@ -30,28 +30,28 @@ class TableCommission extends StatelessWidget {
               columns: const [
                 DataColumn(label: Text('Código compra')),
                 DataColumn(label: Text('SKU')),
-                DataColumn(label: Text('Cantidad')),
-                DataColumn(label: Text('Producto')),
-                DataColumn(label: Text('Tipo')),
-                DataColumn(label: Text('Marketer')),
-                DataColumn(label: Text('Código marketer')),
-                DataColumn(label: Text('Cancelada')),
-                DataColumn(label: Text('% Comisión')),
-                DataColumn(label: Text('Total Comisión')),
+                // DataColumn(label: Text('Cantidad')),
+                // DataColumn(label: Text('Producto')),
+                // DataColumn(label: Text('Tipo')),
+                // DataColumn(label: Text('Marketer')),
+                // DataColumn(label: Text('Código marketer')),
+                // DataColumn(label: Text('Cancelada')),
+                // DataColumn(label: Text('% Comisión')),
+                // DataColumn(label: Text('Total Comisión')),
               ],
               rows: [
                 DataRow(
                   cells: [
                     DataCell(Text(commission.codigoCompra)),
                     DataCell(Text(commission.sku)),
-                    DataCell(Text(commission.cantidad.toString())),
-                    DataCell(Text(commission.producto)),
-                    DataCell(Text(commission.tipoProducto.toString())),
-                    DataCell(Text(commission.marketer)),
-                    DataCell(Text(commission.codMarketer)),
-                    DataCell(Text(commission.compraCancelada)),
-                    DataCell(Text(commission.comisionPorcentaje)),
-                    DataCell(Text(commission.comision.toStringAsFixed(2))),
+                    // DataCell(Text(commission.cantidad.toString())),
+                    // DataCell(Text(commission.producto)),
+                    // DataCell(Text(commission.tipoProducto.toString())),
+                    // DataCell(Text(commission.marketer)),
+                    // DataCell(Text(commission.codMarketer)),
+                    // DataCell(Text(commission.compraCancelada)),
+                    // DataCell(Text(commission.comisionPorcentaje)),
+                    // DataCell(Text(commission.comision.toStringAsFixed(2))),
                   ],
                 ),
               ],
