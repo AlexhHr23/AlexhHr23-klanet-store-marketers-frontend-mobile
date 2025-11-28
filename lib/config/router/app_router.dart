@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klanetmarketers/config/router/app_router_notifier.dart';
+import 'package:klanetmarketers/features/commissions/presentation/screens/direct_network_commission_screen.dart';
 import 'package:klanetmarketers/features/packages/presentation/screens/screens.dart';
 import '../../features/auth/presentation/presentation.dart';
 import '../../features/dashboard/presentation/presentation.dart';
@@ -98,6 +99,12 @@ final goRouterProvider = Provider((ref) {
           country: state.pathParameters['country'] ?? 'no-country',
         ),
       ),
+
+      //* Commissions Routes
+      GoRoute(
+        path: '/commissions-all',
+        builder: (context, state) => DirectNetworkCommissionScreen(),
+      )
     ],
     redirect: (context, state) {
       final authStatus = goRouterNotifier.authStatus;
