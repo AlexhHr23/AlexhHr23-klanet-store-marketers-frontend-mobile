@@ -15,6 +15,7 @@ class CommissionNotifier extends StateNotifier<CommmissionsState> {
   CommissionNotifier({required this.commissionRepository})
     : super(CommmissionsState()) {
     getNeworkCommissions('2025-10-28');
+    // loadMockData();
   }
 
   Future<void> getNeworkCommissions(String date) async {

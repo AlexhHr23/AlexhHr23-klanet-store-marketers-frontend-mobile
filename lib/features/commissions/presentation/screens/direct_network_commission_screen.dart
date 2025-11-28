@@ -1,4 +1,3 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klanetmarketers/features/commissions/presentation/providers/commissions_provider.dart';
@@ -11,83 +10,116 @@ class DirectNetworkCommissionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final state = ref.watch(commissionProvider);
-    final textStyle = Theme.of(context).textTheme;
+
     return AppLayout(
       scaffoldKey: scaffoldKey,
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Builder(
           builder: (_) {
             if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (state.commissions.isEmpty) {
+            if (state.groupedByLevel.isEmpty) {
               return const Center(
                 child: Text('No hay comisiones para mostrar'),
               );
             }
 
-            return SizedBox(
-              width: double.infinity,
-              child: DataTable2(
-                columnSpacing: 12,
-                horizontalMargin: 12,
-                minWidth: 1200,
-                headingRowColor: WidgetStateProperty.all(Colors.grey.shade100),
+            return ListView(
+              children: state.groupedByLevel.entries.map((entry) {
+                final nivel = entry.key;
+                final items = entry.value;
 
-                columns: const [
-                  DataColumn2(label: Text('Codigo Compra'), size: ColumnSize.L),
-                  DataColumn2(label: Text('Producto'), size: ColumnSize.L),
-                  DataColumn2(label: Text('Marketer'), size: ColumnSize.L),
-                  DataColumn2(label: Text('Fecha Compra'), size: ColumnSize.L),
-                  DataColumn2(label: Text('Subtotal'), size: ColumnSize.M),
-                  DataColumn2(label: Text('Comisión'), size: ColumnSize.S),
-                  DataColumn2(label: Text('Porcentaje'), size: ColumnSize.M),
-                  DataColumn2(label: Text('Estatus'), size: ColumnSize.S),
-                ],
+                return ExpansionTile(
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 8),
+                  title: Text(
+                    nivel,
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  children: items.map((item) {
+                    final isCancelada = item.compraCancelada == "1";
 
-                rows: state.commissions.map((item) {
-                  final isCancelada = item.compraCancelada == "1";
-
-                  return DataRow(
-                    color: isCancelada
-                        ? WidgetStateProperty.all(Colors.red.shade50)
-                        : null,
-                    cells: [
-                      DataCell(Text(item.codigoCompra)),
-                      DataCell(Text(item.producto)),
-                      DataCell(Text(item.marketer)),
-                      DataCell(Text(item.fechaCompra.toString())),
-                      DataCell(Text('\$${item.subtotal.toStringAsFixed(2)}')),
-                      DataCell(
-                        Text(
-                          '\$${item.comision.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            color: item.comision < 0
-                                ? Colors.red
-                                : Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 4,
+                      ),
+                      color: isCancelada ? Colors.red.shade50 : Colors.white,
+                      elevation: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _rowItem("Código", item.codigoCompra),
+                            _rowItem("Producto", item.producto, maxLines: 2),
+                            _rowItem("Marketer", item.marketer),
+                            _rowItem("Fecha", item.fechaCompra.toString()),
+                            _rowItem(
+                              "Subtotal",
+                              "\$${item.subtotal.toStringAsFixed(2)}",
+                            ),
+                            _rowItem(
+                              "Comisión",
+                              "\$${item.comision.toStringAsFixed(2)}",
+                              valueColor: item.comision < 0
+                                  ? Colors.red
+                                  : Colors.green,
+                            ),
+                            _rowItem("Porcentaje", item.comisionPorcentaje),
+                            _rowItem(
+                              "Estatus",
+                              isCancelada ? 'Cancelada' : 'Activa',
+                              valueColor: isCancelada
+                                  ? Colors.red
+                                  : Colors.green,
+                            ),
+                          ],
                         ),
                       ),
-                      DataCell(Text(item.comisionPorcentaje)),
-                      DataCell(
-                        Text(
-                          isCancelada ? 'Cancelada' : 'Activa',
-                          style: TextStyle(
-                            color: isCancelada ? Colors.red : Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
-              ),
+                    );
+                  }).toList(),
+                );
+              }).toList(),
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _rowItem(
+    String label,
+    String value, {
+    Color? valueColor,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: valueColor),
+            ),
+          ),
+        ],
       ),
     );
   }
