@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   file_selector_linux
+  flutter_localization
   gtk
   rive_native
   url_launcher_linux

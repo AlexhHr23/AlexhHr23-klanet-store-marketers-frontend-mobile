@@ -14,7 +14,7 @@ class CommissionNotifier extends StateNotifier<CommmissionsState> {
   final CommissionRepository commissionRepository;
   CommissionNotifier({required this.commissionRepository})
     : super(CommmissionsState()) {
-    getNeworkCommissions('2025-10-28');
+    // getNeworkCommissions('2025-10-28');
     // loadMockData();
   }
 
@@ -53,12 +53,14 @@ class CommmissionsState {
   final bool hasSearched;
   final List<NetworkCommission> commissions;
   final Map<String, List<NetworkCommission>> groupedByLevel;
+  final DateTime? selectedDate;
 
   CommmissionsState({
     this.isLoading = false,
     this.hasSearched = false,
     this.commissions = const [],
     this.groupedByLevel = const {},
+    this.selectedDate,
   });
 
   CommmissionsState copyWith({
@@ -66,10 +68,12 @@ class CommmissionsState {
     bool? hasSearched,
     List<NetworkCommission>? commissions,
     Map<String, List<NetworkCommission>>? groupedByLevel,
+    DateTime? selectedDate,
   }) => CommmissionsState(
     isLoading: isLoading ?? this.isLoading,
     hasSearched: hasSearched ?? this.hasSearched,
     commissions: commissions ?? this.commissions,
     groupedByLevel: groupedByLevel ?? this.groupedByLevel,
+    selectedDate: selectedDate ?? this.selectedDate,
   );
 }
